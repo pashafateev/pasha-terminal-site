@@ -12,7 +12,7 @@
   border-radius: 100%;
   text-align: center;
   object-fit: cover;
-  object-position: center;
+  object-position: 50% 30%;
 }
 
 /* CONTAINER */
@@ -31,7 +31,7 @@
   display: flex;
   width: 800px;
   height: auto;
-  background: linear-gradient(to right, #d6a4a4, #dae2f8);
+  background: linear-gradient(to bottom, rgb(154 166 201), rgb(214, 164, 164));
   border-radius: 12px;
   box-shadow: 1px 7px 10px 2px rgba(0, 0, 0, 0.15);
 }
@@ -118,7 +118,7 @@ a:hover {
   .card-container {
     display: flex;
     flex-direction: column-reverse;
-    background: linear-gradient(to right, #d6a4a4, #dae2f8);
+    background: linear-gradient(to bottom, rgb(154 166 201), rgb(214, 164, 164));
     width: 750px;
     margin-top: 12px;
     margin-bottom: 12px;
@@ -156,11 +156,5 @@ a:hover {
     justify-content: center;
     align-items: center;
     margin-top: 20px;
-  }
-}
-@media (min-width: 577px) and (max-width: 799px) {
-  .card-container {
-    width: 95%; /* Use percentage to maintain some margins */
-    margin: 0 auto;
   }
 }
