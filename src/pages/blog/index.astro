@@ -8,10 +8,10 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
 
 <BaseLayout title="Blog">
   <div class="max-w-4xl mx-auto px-4 py-8">
-    <h1 class="text-4xl font-bold mb-8">Blog</h1>
+    <h1 class="text-4xl font-bold mb-8 text-gray-900">Blog</h1>
     <div class="grid gap-8">
       {sortedPosts.map(post => (
-        <article class="bg-white rounded-lg shadow-md overflow-hidden">
+        <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
           {post.data.heroImage && (
             <img
               src={post.data.heroImage}
@@ -21,7 +21,7 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
           )}
           <div class="p-6">
             <h2 class="text-2xl font-bold mb-2">
-              <a href={`/blog/${post.slug}`} class="hover:text-blue-600 transition-colors">
+              <a href={`/blog/${post.slug}`} class="text-gray-900 hover:text-blue-600 transition-colors">
                 {post.data.title}
               </a>
             </h2>
