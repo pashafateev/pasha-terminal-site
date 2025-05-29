@@ -1,0 +1,40 @@
+---
+import BaseLayout from './BaseLayout.astro';
+const { frontmatter } = Astro.props;
+---
+
+<BaseLayout title={frontmatter.title}>
+  <article class="max-w-3xl mx-auto px-4 py-8">
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold mb-4">{frontmatter.title}</h1>
+      <div class="text-gray-600">
+        <time datetime={frontmatter.pubDate.toISOString()}>
+          {frontmatter.pubDate.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          })}
+        </time>
+        {frontmatter.tags && (
+          <div class="mt-2">
+            {frontmatter.tags.map(tag => (
+              <span class="inline-block bg-gray-200 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    </header>
+    {frontmatter.heroImage && (
+      <img
+        src={frontmatter.heroImage}
+        alt={frontmatter.title}
+        class="w-full h-64 object-cover rounded-lg mb-8"
+      />
+    )}
+    <div class="prose prose-lg max-w-none">
+      <slot />
+    </div>
+  </article>
+</BaseLayout> 

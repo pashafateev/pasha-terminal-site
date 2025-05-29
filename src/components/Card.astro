@@ -1,6 +1,6 @@
 ---
 //src/components/Card.astro
-const {name, position, aboutMe, linkedin, github, cvLink, profileImage } = Astro.props;
+const {name, position, aboutMe, linkedin, github, blog, cvLink, profileImage } = Astro.props;
 
 import '../styles/card.css';
 ---
@@ -23,6 +23,12 @@ import '../styles/card.css';
                         GitHub
                     </span>
                     <i class="bi bi-github"></i>
+                </a>
+                <a href={blog} class="hover-text">
+                    <span class="tooltip-text" id="fade">
+                        Blog
+                    </span>
+                    <i class="bi bi-journal-text"></i>
                 </a>
                 <a href={cvLink} class="hover-text" target="_blank">
                     <span class="tooltip-text" id="fade">
