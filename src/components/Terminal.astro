@@ -17,7 +17,7 @@ const { path = '~', status = 'READY' } = Astro.props;
     <p class="terminal-title">pasha@portfolio:{path}</p>
   </header>
 
-  <div class="terminal-content">
+  <div class="terminal-content" transition:name="terminal-content">
     <slot />
   </div>
 
@@ -91,6 +91,8 @@ const { path = '~', status = 'READY' } = Astro.props;
   .terminal-content {
     padding: 24px 16px;
     overflow-x: auto;
+    contain: paint;
+    will-change: transform, opacity;
   }
 
   @media (min-width: 768px) {

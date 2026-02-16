@@ -1,5 +1,12 @@
 ---
-const { title = 'Personal Card Astro', description } = Astro.props;
+import Terminal from '../components/Terminal.astro';
+
+const {
+  title = 'Personal Card Astro',
+  description,
+  path = '~',
+  status = 'READY',
+} = Astro.props;
 import '../styles/global.css';
 ---
 
@@ -12,11 +19,20 @@ import '../styles/global.css';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <script is:inline>
+      try {
+        const nav = performance.getEntriesByType('navigation')[0];
+        document.documentElement.dataset.navDirection =
+          nav && nav.type === 'back_forward' ? 'back' : 'forward';
+      } catch {}
+    </script>
     <title>{title}</title>
   </head>
   <body>
     <main class="terminal-page">
-      <slot />
+      <Terminal path={path} status={status}>
+        <slot />
+      </Terminal>
     </main>
   </body>
 </html>

@@ -1,32 +1,29 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-import Terminal from '../components/Terminal.astro';
 const { frontmatter } = Astro.props;
 ---
 
-<BaseLayout title={`${frontmatter.title} | Blog`}>
-  <Terminal path="~/blog/post" status="READING">
-    <header class="post-meta">
-      <p><span class="prompt">pasha@portfolio:~/blog$</span> cat {frontmatter.title.toLowerCase().replaceAll(' ', '-')}.md</p>
-      <h1>{frontmatter.title}</h1>
-      <p class="meta-line">
-        <time datetime={frontmatter.pubDate.toISOString()}>
-          {frontmatter.pubDate.toLocaleDateString('en-US', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-          })}
-        </time>
-        {frontmatter.tags && frontmatter.tags.length > 0 && (
-          <span> | {frontmatter.tags.join(', ')}</span>
-        )}
-      </p>
-      <p class="back"><a href="/blog">cd .. (back to blog)</a></p>
-    </header>
-    <div class="prose prose-invert prose-pre:bg-transparent prose-code:text-[inherit] max-w-none">
-      <slot />
-    </div>
-  </Terminal>
+<BaseLayout title={`${frontmatter.title} | Blog`} path="~/blog/post" status="READING">
+  <header class="post-meta">
+    <p><span class="prompt">pasha@portfolio:~/blog$</span> cat {frontmatter.title.toLowerCase().replaceAll(' ', '-')}.md</p>
+    <h1>{frontmatter.title}</h1>
+    <p class="meta-line">
+      <time datetime={frontmatter.pubDate.toISOString()}>
+        {frontmatter.pubDate.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric'
+        })}
+      </time>
+      {frontmatter.tags && frontmatter.tags.length > 0 && (
+        <span> | {frontmatter.tags.join(', ')}</span>
+      )}
+    </p>
+    <p class="back"><a href="/blog">cd .. (back to blog)</a></p>
+  </header>
+  <div class="prose prose-invert prose-pre:bg-transparent prose-code:text-[inherit] max-w-none">
+    <slot />
+  </div>
 </BaseLayout> 
 
 <style>
