@@ -1,21 +1,13 @@
 ---
-title: "Welcome to My Blog"
-description: "This is my first blog post where I share my thoughts and experiences."
-pubDate: 2024-03-20
-tags: ["welcome", "first-post"]
+title: "Boot Message"
+description: "AI-written starter post to keep the blog alive until real notes land."
+pubDate: 2026-02-16
+tags: ["meta", "ai", "placeholder"]
 ---
 
-# Welcome to My Blog
+This first post was written by AI, not by Pasha.
 
-This is my first blog post! I'm excited to share my thoughts, experiences, and knowledge with you.
+It exists so `/blog` does not look abandoned while the real writing queue warms up.
+The plan is simple: short field notes, candid takes, minimal editing, shipped fast.
 
-## What to Expect
-
-In this blog, I'll be sharing:
-
-- Technical insights
-- Personal experiences
-- Project updates
-- And much more!
-
-Feel free to explore and stay tuned for more content. 
+If you're reading this later, this file should be gone or buried under actual posts.
