@@ -1,0 +1,101 @@
+---
+interface Props {
+  path?: string;
+  status?: string;
+}
+
+const { path = '~', status = 'READY' } = Astro.props;
+---
+
+<section class="terminal-shell" aria-label="Terminal shell">
+  <header class="terminal-titlebar">
+    <div class="terminal-dots" aria-hidden="true">
+      <span class="dot dot-red"></span>
+      <span class="dot dot-yellow"></span>
+      <span class="dot dot-green"></span>
+    </div>
+    <p class="terminal-title">pasha@portfolio:{path}</p>
+  </header>
+
+  <div class="terminal-content">
+    <slot />
+  </div>
+
+  <footer class="terminal-statusbar">
+    <p class="status-left">{path}</p>
+    <p class="status-right">{status}</p>
+  </footer>
+</section>
+
+<style>
+  .terminal-shell {
+    width: 100%;
+    border: 1px solid rgba(97, 175, 239, 0.35);
+    border-radius: 12px;
+    overflow: hidden;
+    background: rgba(10, 14, 20, 0.82);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(8px);
+  }
+
+  .terminal-titlebar,
+  .terminal-statusbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    font-size: 0.8rem;
+    color: var(--term-dim);
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  .terminal-titlebar {
+    border-bottom: 1px solid rgba(97, 175, 239, 0.2);
+  }
+
+  .terminal-statusbar {
+    border-top: 1px solid rgba(97, 175, 239, 0.2);
+  }
+
+  .terminal-title,
+  .status-left,
+  .status-right {
+    margin: 0;
+  }
+
+  .terminal-dots {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .dot-red {
+    background: var(--term-red);
+  }
+
+  .dot-yellow {
+    background: var(--term-yellow);
+  }
+
+  .dot-green {
+    background: var(--term-green-dot);
+  }
+
+  .terminal-content {
+    padding: 24px 16px;
+    overflow-x: auto;
+  }
+
+  @media (min-width: 768px) {
+    .terminal-content {
+      padding: 28px 24px;
+    }
+  }
+</style>

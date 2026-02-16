@@ -1,22 +1,59 @@
 ---
-// src/pages/index.astro
-
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Card from "../components/Card.astro";
+import Terminal from "../components/Terminal.astro";
 ---
 
 <BaseLayout
   title="Pasha Fateev | Software Engineer"
   description="Software Engineer with a musical background, working with Python and Go. Former UW CS grad bringing creativity to code."
 >
-  <Card
-    name="Pasha Fateev"
-    position="Software Engineer"
-    aboutMe={`Hi, I'm Pasha — a backend engineer who enjoys writing production-quality code and solving real-world problems. At AutoKitteh, I built event-driven workflows in Python and integrations in Go for third-party platforms, including a bidirectional sync between Linear and an enterprise app using OAuth and gRPC. I've worked with APIs from GitHub, AWS, Slack, Google, Discord, and OpenAI, and contributed upstream to PyGithub. I'm especially interested in backend engineering, developer experience, and learning more about distributed systems.`}
-    linkedin="https://www.linkedin.com/in/pashafateev/"
-    github="https://github.com/pashafateev"
-    blog="/blog"
-    cvLink="/files/resume-cv.pdf"
-    profileImage="/images/profile.webp"
-  />
+  <Terminal path="~" status="HOME">
+    <div class="output">
+      <p><span class="prompt">pasha@portfolio:~$</span> whoami</p>
+      <p class="value">Pasha Fateev - Software Engineer</p>
+
+      <p><span class="prompt">pasha@portfolio:~$</span> cat about.txt</p>
+      <p class="value">
+        Backend engineer focused on Python and Go, building event-driven systems and durable integrations.
+        I care about clear APIs, reliable automation, and practical developer experience.
+      </p>
+
+      <p><span class="prompt">pasha@portfolio:~$</span> ls links/</p>
+      <ul class="links">
+        <li><a href="https://github.com/pashafateev" target="_blank" rel="noreferrer">github</a></li>
+        <li><a href="https://www.linkedin.com/in/pashafateev/" target="_blank" rel="noreferrer">linkedin</a></li>
+        <li><a href="/blog">blog</a></li>
+        <li><a href="/files/resume-cv.pdf" target="_blank" rel="noreferrer">resume.pdf</a></li>
+      </ul>
+
+      <p><span class="prompt">pasha@portfolio:~$</span> help</p>
+      <p class="value">Open links above or navigate to <a href="/blog">/blog</a> to read posts.<span class="cursor"></span></p>
+    </div>
+  </Terminal>
 </BaseLayout>
+
+<style>
+  .output {
+    display: grid;
+    gap: 12px;
+  }
+
+  .output p {
+    margin: 0;
+  }
+
+  .prompt {
+    color: var(--term-green);
+  }
+
+  .value {
+    color: var(--term-fg);
+  }
+
+  .links {
+    margin: 0;
+    padding-left: 20px;
+    display: grid;
+    gap: 4px;
+  }
+</style>

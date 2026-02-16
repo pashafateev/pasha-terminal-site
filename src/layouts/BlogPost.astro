@@ -1,13 +1,15 @@
 ---
 import BaseLayout from './BaseLayout.astro';
+import Terminal from '../components/Terminal.astro';
 const { frontmatter } = Astro.props;
 ---
 
-<BaseLayout title={frontmatter.title}>
-  <article class="max-w-3xl mx-auto px-4 py-8">
-    <header class="mb-8">
-      <h1 class="text-4xl font-bold mb-4 text-gray-900">{frontmatter.title}</h1>
-      <div class="text-gray-600">
+<BaseLayout title={`${frontmatter.title} | Blog`}>
+  <Terminal path="~/blog/post" status="READING">
+    <header class="post-meta">
+      <p><span class="prompt">pasha@portfolio:~/blog$</span> cat {frontmatter.title.toLowerCase().replaceAll(' ', '-')}.md</p>
+      <h1>{frontmatter.title}</h1>
+      <p class="meta-line">
         <time datetime={frontmatter.pubDate.toISOString()}>
           {frontmatter.pubDate.toLocaleDateString('en-US', {
             year: 'numeric',
@@ -15,26 +17,39 @@ const { frontmatter } = Astro.props;
             day: 'numeric'
           })}
         </time>
-        {frontmatter.tags && (
-          <div class="mt-2">
-            {frontmatter.tags.map(tag => (
-              <span class="inline-block bg-gray-100 rounded-full px-3 py-1 text-sm font-semibold text-gray-700 mr-2 mb-2">
-                {tag}
-              </span>
-            ))}
-          </div>
+        {frontmatter.tags && frontmatter.tags.length > 0 && (
+          <span> | {frontmatter.tags.join(', ')}</span>
         )}
-      </div>
+      </p>
+      <p class="back"><a href="/blog">cd .. (back to blog)</a></p>
     </header>
-    {frontmatter.heroImage && (
-      <img
-        src={frontmatter.heroImage}
-        alt={frontmatter.title}
-        class="w-full h-64 object-cover rounded-lg mb-8 shadow-lg"
-      />
-    )}
-    <div class="prose prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800">
+    <div class="prose prose-invert prose-pre:bg-transparent prose-code:text-[inherit] max-w-none">
       <slot />
     </div>
-  </article>
+  </Terminal>
 </BaseLayout> 
+
+<style>
+  .prompt {
+    color: var(--term-green);
+  }
+
+  .post-meta h1 {
+    margin: 8px 0 6px;
+    font-size: 1.65rem;
+    line-height: 1.2;
+  }
+
+  .post-meta p {
+    margin: 0;
+  }
+
+  .meta-line {
+    color: var(--term-dim);
+    margin-bottom: 8px;
+  }
+
+  .back {
+    margin-bottom: 16px;
+  }
+</style>
