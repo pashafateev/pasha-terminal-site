@@ -7,7 +7,8 @@
     "start": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "post:new": "bash ./scripts/new-post.sh"
   },
   "dependencies": {
     "astro": "^4.9.1"

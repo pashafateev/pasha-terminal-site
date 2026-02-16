@@ -95,6 +95,7 @@ Edit `src/pages/index.astro` for:
 
 - Add posts under `src/content/blog/*.md`
 - Frontmatter schema is defined in `src/content/config.ts`
+- Quick flow (branch + commit + push + PR): `npm run post:new -- "Post Title" "Description" "tag1,tag2"`
 
 Required frontmatter:
 - `title`
@@ -117,6 +118,7 @@ Optional frontmatter:
 - `npm run build` - build site to `dist/`
 - `npm run preview` - preview production build
 - `npm run astro` - run Astro CLI commands
+- `npm run post:new -- "Post Title" "Description" "tag1,tag2"` - create blog post file, branch, commit, push, and PR
 
 ## Deployment
 
