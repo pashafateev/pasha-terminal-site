@@ -20,7 +20,15 @@ import '../styles/global.css';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
-    <ViewTransitions />
+    <script is:inline>
+      try {
+        if (/dia/i.test(navigator.userAgent)) {
+          document.startViewTransition = undefined;
+          document.documentElement.dataset.disableViewTransitions = 'true';
+        }
+      } catch {}
+    </script>
+    <ViewTransitions fallback="none" />
     <title>{title}</title>
   </head>
   <body>

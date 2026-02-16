@@ -66,7 +66,7 @@ a:hover {
 @keyframes pane-enter-from-right {
   from {
     opacity: 0;
-    transform: translateX(16px);
+    transform: translateX(26px);
   }
   to {
     opacity: 1;
@@ -77,7 +77,7 @@ a:hover {
 @keyframes pane-enter-from-left {
   from {
     opacity: 0;
-    transform: translateX(-16px);
+    transform: translateX(-26px);
   }
   to {
     opacity: 1;
@@ -91,8 +91,8 @@ a:hover {
     transform: translateX(0);
   }
   to {
-    opacity: 0.2;
-    transform: translateX(-12px);
+    opacity: 0;
+    transform: translateX(-20px);
   }
 }
 
@@ -102,25 +102,25 @@ a:hover {
     transform: translateX(0);
   }
   to {
-    opacity: 0.2;
-    transform: translateX(12px);
+    opacity: 0;
+    transform: translateX(20px);
   }
 }
 
 html[data-astro-transition="forward"]::view-transition-old(terminal-content) {
-  animation: 140ms ease-out both pane-exit-to-left;
+  animation: 180ms ease-out both pane-exit-to-left;
 }
 
 html[data-astro-transition="forward"]::view-transition-new(terminal-content) {
-  animation: 180ms ease-out both pane-enter-from-right;
+  animation: 240ms ease-out both pane-enter-from-right;
 }
 
 html[data-astro-transition="back"]::view-transition-old(terminal-content) {
-  animation: 140ms ease-out both pane-exit-to-right;
+  animation: 180ms ease-out both pane-exit-to-right;
 }
 
 html[data-astro-transition="back"]::view-transition-new(terminal-content) {
-  animation: 180ms ease-out both pane-enter-from-left;
+  animation: 240ms ease-out both pane-enter-from-left;
 }
 
 ::view-transition-group(root),
@@ -134,10 +134,9 @@ html[data-astro-transition="back"]::view-transition-new(terminal-content) {
   mix-blend-mode: normal;
 }
 
-/* Reduce expensive effects while transitions run to avoid jank on some browsers. */
-html[data-astro-transition] .terminal-shell {
-  backdrop-filter: none;
-  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.4);
+html[data-disable-view-transitions="true"]::view-transition-old(*),
+html[data-disable-view-transitions="true"]::view-transition-new(*) {
+  animation: none !important;
 }
 
 @keyframes cursor-blink {
