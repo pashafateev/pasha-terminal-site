@@ -21,7 +21,7 @@ const { frontmatter } = Astro.props;
     </p>
     <p class="back"><a href="/blog">cd .. (back to blog)</a></p>
   </header>
-  <div class="prose prose-invert prose-pre:bg-transparent prose-code:text-[inherit] max-w-none">
+  <div class="prose prose-invert prose-pre:bg-transparent max-w-none">
     <slot />
   </div>
 </BaseLayout> 
@@ -48,5 +48,18 @@ const { frontmatter } = Astro.props;
 
   .back {
     margin-bottom: 16px;
+  }
+
+  :global(.prose :not(pre) > code) {
+    color: var(--term-green);
+    background: rgba(97, 175, 239, 0.12);
+    border: 1px solid rgba(97, 175, 239, 0.35);
+    border-radius: 4px;
+    padding: 0.08rem 0.34rem;
+  }
+
+  :global(.prose :not(pre) > code::before),
+  :global(.prose :not(pre) > code::after) {
+    content: none;
   }
 </style>
