@@ -1,194 +1,231 @@
 # 3D Terminal Redesign — Implementation Plan
 
 ## Concept
-Transform the professional card site into a "3D terminal" — a persistent terminal environment
-with depth. You're always inside the terminal. Content slides forward like opening files in
-`vim` or `less`. You never leave the session.
+Transform the professional card site into a persistent "3D terminal" environment with layered depth.
+Navigation should feel like moving through terminal files: same shell, deeper context, clear path state.
+
+## Iteration Rules
+- Keep the site shippable after every phase.
+- Prefer progressive enhancement: core navigation/content works without JavaScript.
+- Each phase has explicit acceptance criteria and rollback-safe scope.
+- Defer non-essential visual effects until core routing/content parity is complete.
 
 ---
 
-## Phase 1: Foundation — Terminal Theme & Layout
+## Phase 0: Guardrails & Baseline
 
-### 1.1 Terminal Color System & Typography
-- **File**: `tailwind.config.mjs`, `src/styles/global.css`
-- Replace Lato with a monospace font (JetBrains Mono via Google Fonts)
-- Define terminal color palette as CSS custom properties:
-  - `--term-bg`: deep black (#0a0e14)
-  - `--term-fg`: light gray (#c5c8c6)
-  - `--term-green`: terminal green (#39ff14)
-  - `--term-dim`: muted gray (#5c6370)
-  - `--term-blue`: accent blue (#61afef)
-  - `--term-red`: dot red (#ff5f56)
-  - `--term-yellow`: dot yellow (#ffbd2e)
-  - `--term-green-dot`: dot green (#27c93f)
-- Add CSS animations: cursor blink, subtle glow, typing effect
-- Custom scrollbar styling (thin, dark, green thumb)
+### Scope
+- Capture baseline behavior and visuals before redesign.
+- Define a short regression checklist for every phase.
 
-### 1.2 Terminal Window Component
+### Files
+- `README.md` (optional notes)
+- `PLAN.md` (this document)
+
+### Deliverables
+- Route checklist: `/`, `/blog`, blog post route, resume PDF link, external links.
+- Baseline screenshots (home/blog/post) for comparison during iteration.
+- Validation commands to run each phase:
+  - `npm run build`
+  - `npm run preview` smoke check (manual)
+
+### Acceptance Criteria
+- Baseline routes and assets are documented.
+- Validation steps are clear and repeatable.
+
+---
+
+## Phase 1: Visual Foundation (No Content Rewrite Yet)
+
+### Scope
+- Build terminal design tokens and shared shell/chrome.
+- Keep existing pages functional, only wrapped/rethemed.
+
+### Tasks
+1. Terminal color system and typography
+- **Files**: `tailwind.config.mjs`, `src/styles/global.css`, `src/layouts/BaseLayout.astro`
+- Replace Lato with JetBrains Mono.
+- Add terminal CSS variables:
+  - `--term-bg` `#0a0e14`
+  - `--term-fg` `#c5c8c6`
+  - `--term-green` `#39ff14`
+  - `--term-dim` `#5c6370`
+  - `--term-blue` `#61afef`
+  - `--term-red` `#ff5f56`
+  - `--term-yellow` `#ffbd2e`
+  - `--term-green-dot` `#27c93f`
+- Add cursor blink and subtle glow animations.
+- Add reduced-motion handling (`prefers-reduced-motion`).
+
+2. Terminal shell component
 - **New file**: `src/components/Terminal.astro`
-- The persistent chrome that wraps everything:
-  - **Title bar**: Three dots (red/yellow/green) + path text (e.g., `pasha@site:~$`)
-  - **Body**: Dark content area with padding, monospace text
-  - **Status bar** (bottom): Shows context like `[q quit] [↑↓ scroll]` or current path
-- This replaces `Card.astro` as the main visual container
-- Accepts slots for content
+- Includes title bar, content body, and status bar slots.
+- Supports props for current path/status hints.
 
-### 1.3 Update BaseLayout
+3. Layout integration
 - **File**: `src/layouts/BaseLayout.astro`
-- Swap Google Fonts from Lato to JetBrains Mono
-- Update meta/title
-- Full dark background with subtle vignette effect
-- Import new terminal styles
+- Apply dark background/vignette and terminal defaults.
+- Keep current routes rendering with minimal behavioral change.
+
+### Acceptance Criteria
+- `/` and `/blog` still render and navigate correctly.
+- `npm run build` passes.
+- Theme tokens are centralized and reusable.
+- No keyboard shortcuts or command logic introduced yet.
 
 ---
 
-## Phase 2: Home Page — The Shell (Layer 1)
+## Phase 2: Content Migration (Static Terminal UX)
 
-### 2.1 Redesign index.astro
+### Scope
+- Rewrite page content into terminal-style static output.
+- No interactive command parser yet.
+
+### Tasks
+1. Home shell rewrite
 - **File**: `src/pages/index.astro`
-- Replace the Card component with Terminal component
-- Content rendered as terminal output:
-  ```
-  $ whoami
-  Pasha Fateev — Software Engineer
+- Replace `Card.astro` usage with `Terminal.astro`.
+- Render pre-baked command output (`whoami`, `cat about.txt`, `ls links`, `help`).
+- Keep links as semantic anchors for no-JS support.
 
-  $ cat about.txt
-  Backend-focused engineer working on distributed systems...
-  Currently building things at AutoKitteh.
-  Python, Go, and whatever gets the job done.
-
-  $ ls links/
-  > github       linkedin       blog       resume.pdf
-
-  $ help
-  Available commands:
-    about     — who I am
-    blog      — read my writing
-    links     — find me online
-    resume    — download my CV
-    help      — show this message
-  ```
-- Each "command" is pre-rendered (not actually typed) — static but styled as terminal output
-- Links section: icons + labels, styled as terminal list items
-- Profile image: optional — could appear as ASCII art or small circular image in the "about" output
-
-### 2.2 Interactive Prompt (Client-Side)
-- **New file**: `src/components/Prompt.astro` (with `<script>` tag for client JS)
-- Blinking cursor at the bottom of the terminal
-- User can actually type commands:
-  - `about` → scrolls to / re-renders about section
-  - `blog` → navigates to `/blog`
-  - `links` → scrolls to links section
-  - `resume` → triggers PDF download
-  - `help` → shows help text
-  - `clear` → clears terminal output
-- Arrow up/down for command history
-- Tab completion (nice-to-have)
-- This is progressive enhancement — site works without JS, commands are just links
-
----
-
-## Phase 3: Blog — Going Deeper (Layer 2)
-
-### 3.1 Blog Listing Page
+2. Blog list terminal rewrite
 - **File**: `src/pages/blog/index.astro`
-- Wrapped in Terminal component
-- Title bar shows: `pasha@site:~/blog`
-- Content styled as `ls -la` output:
-  ```
-  $ ls -la ~/blog/
+- Render posts as terminal-like listing output.
+- Keep links to individual post routes.
 
-  total 3
-  drwxr-xr-x  2024-03-20  welcome.md          Welcome to My Blog
-  drwxr-xr-x  2024-04-15  distributed-sys.md  Lessons in Distributed Systems
-  ```
-- Each entry is a link to the full post
-- Tags shown as `[tag1, tag2]` after description
-- Back navigation: `$ cd ~` link at bottom
+3. Blog post reader parity
+- **Files**: `src/layouts/BlogPost.astro`, `src/pages/blog/[...slug].astro` (or existing equivalent)
+- Ensure post route exists and uses terminal-themed reader layout.
+- Terminal header metadata (`cat file`, date/tags) + readable content styling.
 
-### 3.2 Blog Post Reader
-- **File**: `src/layouts/BlogPost.astro`
-- Terminal chrome persists — you're still in the terminal
-- Title bar updates: `pasha@site:~/blog/post-slug`
-- Header shows:
-  ```
-  $ cat welcome.md
-  ═══════════════════════════════════════
-  Welcome to My Blog
-  2024-03-20  •  #welcome  #first-post
-  ═══════════════════════════════════════
-  ```
-- Content area: readable typography but terminal-themed
-  - Slightly larger line height for readability
-  - Green for headings and links
-  - Code blocks look native (they're already in a terminal!)
-  - Blockquotes with `>` prefix styling
-- Status bar at bottom: `[← back to blog] [↑ top]`
-- `q` keypress navigates back to blog listing
+### Acceptance Criteria
+- `/`, `/blog`, and blog post route all render in terminal style.
+- All navigation works without JavaScript.
+- Resume link still downloads from `public/files/resume-cv.pdf`.
+- External links remain valid.
 
-### 3.3 View Transitions
+---
+
+## Phase 3: Layered Navigation & Transitions
+
+### Scope
+- Add "depth" behavior between pages while keeping accessibility intact.
+
+### Tasks
+1. View transitions
 - **File**: `src/layouts/BaseLayout.astro`
-- Enable Astro View Transitions (`<ViewTransitions />`)
-- Terminal chrome stays fixed during page transitions
-- Content area transitions: slide-in from right when going deeper, slide-out when going back
-- This creates the "3D depth" effect — layers sliding in/out within the terminal frame
+- Enable Astro View Transitions.
+- Keep terminal chrome stable while content pane transitions.
+
+2. Direction-aware motion
+- Forward navigation: slide content in from right.
+- Back navigation: slide content in from left (or inverse animation).
+- Respect `prefers-reduced-motion`.
+
+3. Path/status synchronization
+- Ensure title/status bars reflect route context (`~`, `~/blog`, `~/blog/post`).
+
+### Acceptance Criteria
+- Route transitions are visually directional and not jarring.
+- Reduced motion disables non-essential animation.
+- Keyboard/browser back works with correct transition direction.
 
 ---
 
-## Phase 4: Polish & Responsiveness
+## Phase 4: Interactive Prompt (Progressive Enhancement)
 
-### 4.1 Keyboard Navigation
-- Add global keyboard listener (in BaseLayout or a script):
-  - `q` — go back (when not in prompt input)
-  - `/` — focus the command prompt
-  - `Esc` — blur prompt / go home
-- Ensure all commands also work via mouse/touch
+### Scope
+- Introduce client-side command input as enhancement.
+- Non-JS mode remains fully usable.
 
-### 4.2 Responsive Design
-- Mobile: Terminal fills viewport edge-to-edge
-- Smaller font size on mobile (14px → 12px)
-- Title bar simplified on small screens
-- Touch targets: links/commands have adequate padding
-- Status bar stays fixed at bottom on mobile
+### Tasks
+1. Prompt component
+- **New file**: `src/components/Prompt.astro`
+- Blinking cursor + input handling.
+- Commands:
+  - `about` -> jump/focus about section
+  - `blog` -> navigate to `/blog`
+  - `links` -> jump/focus links block
+  - `resume` -> open/download CV
+  - `help` -> print help output
+  - `clear` -> clear prompt session output only
 
-### 4.3 Subtle Effects
-- CRT scanline overlay (very subtle, CSS-only, optional)
-- Subtle text-shadow glow on green elements
-- Terminal window slight drop shadow for "floating" depth effect
-- Cursor blink matches real terminal timing (530ms on/off)
+2. Input ergonomics
+- Arrow up/down history.
+- Tab completion optional, only if low complexity.
+- Do not hijack keys inside regular text inputs.
 
-### 4.4 Cleanup
-- Remove old `Card.astro` component
-- Remove old `card.css` styles
-- Update any remaining references
-- Test all routes and navigation
-- Verify PDF download still works
-- Check all external links (GitHub, LinkedIn)
+3. Global shortcuts
+- `/` focus prompt
+- `Esc` blur prompt
+- `q` back navigation when focus is not in prompt/input fields
+
+### Acceptance Criteria
+- With JS off: site remains fully navigable via links.
+- With JS on: prompt commands work and degrade safely on unknown command.
+- Keyboard shortcuts do not break accessibility or native browser behavior.
 
 ---
 
-## File Change Summary
+## Phase 5: Polish, Responsive, Cleanup
+
+### Scope
+- Add optional aesthetic effects, finish responsive behavior, remove obsolete components/styles.
+
+### Tasks
+1. Responsive hardening
+- Mobile terminal edge-to-edge layout.
+- Keep base font readable (minimum `14px` for body text).
+- Ensure touch target size is adequate.
+
+2. Optional effects
+- Subtle scanlines, glow, depth shadow.
+- Effects remain restrained and can be toggled off easily.
+
+3. Cleanup
+- Remove `src/components/Card.astro`.
+- Remove `src/styles/card.css`.
+- Remove stale imports/references.
+
+4. Final regression
+- Build + route smoke test + link verification.
+
+### Acceptance Criteria
+- No remaining dependency on old card component/styles.
+- Mobile and desktop both usable and readable.
+- All planned routes/assets pass regression checklist.
+
+---
+
+## File Change Summary (Planned)
 
 | Action | File | Description |
 |--------|------|-------------|
-| Edit | `tailwind.config.mjs` | Add terminal colors, fonts, animations |
-| Edit | `src/styles/global.css` | Terminal base styles, animations, scrollbar |
-| Delete | `src/styles/card.css` | No longer needed |
-| Create | `src/components/Terminal.astro` | Terminal window chrome component |
-| Create | `src/components/Prompt.astro` | Interactive command prompt |
-| Delete | `src/components/Card.astro` | Replaced by Terminal |
-| Edit | `src/layouts/BaseLayout.astro` | New font, view transitions, dark theme |
-| Edit | `src/layouts/BlogPost.astro` | Terminal-themed blog reader |
-| Rewrite | `src/pages/index.astro` | Terminal shell home page |
-| Rewrite | `src/pages/blog/index.astro` | Terminal-styled blog listing |
+| Edit | `tailwind.config.mjs` | Terminal colors, fonts, animations |
+| Edit | `src/styles/global.css` | Base terminal styles, motion, scrollbar |
+| Create | `src/components/Terminal.astro` | Persistent terminal shell component |
+| Create | `src/components/Prompt.astro` | Interactive prompt enhancement |
+| Edit | `src/layouts/BaseLayout.astro` | Font/theme integration, transitions |
+| Edit | `src/layouts/BlogPost.astro` | Terminal-styled blog post layout |
+| Edit | `src/pages/index.astro` | Static terminal home content |
+| Edit | `src/pages/blog/index.astro` | Terminal-style blog listing |
+| Create/Edit | `src/pages/blog/[...slug].astro` | Ensure post route exists and uses terminal reader |
+| Delete (Phase 5) | `src/components/Card.astro` | Legacy component removal |
+| Delete (Phase 5) | `src/styles/card.css` | Legacy style removal |
 
 ---
 
-## Implementation Order
+## Execution Order
+1. Phase 0: Guardrails & baseline
+2. Phase 1: Visual foundation
+3. Phase 2: Static content migration
+4. Phase 3: Layered transitions
+5. Phase 4: Interactive prompt
+6. Phase 5: Polish and cleanup
 
-1. Phase 1 (Foundation) — get the terminal looking right
-2. Phase 2 (Home) — rebuild the landing experience
-3. Phase 3 (Blog) — wire up the depth/reader layer
-4. Phase 4 (Polish) — keyboard nav, responsive, effects, cleanup
+Each phase should land as a separate commit to keep rollback and iteration straightforward.
 
-Each phase builds on the last. Site remains functional throughout.
+## Tracking
+- Execution tracking lives in GitHub Issues.
+- `PLAN.md` stays as the high-level architecture and sequencing document.
+- Use `docs/github-issues-seed.md` to create the Epic + phase issues with checklists.

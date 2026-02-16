@@ -15,12 +15,13 @@
   object-position: 50% 30%;
 }
 
-/* CONTAINER */
-.container {
+/* PAGE WRAPPER */
+.card-page {
   display: flex;
   justify-content: center;
   align-items: center;
   height: 100vh;
+  width: 100%;
   background-color: #131516;
   font-family: "Lato", sans-serif;
   padding: 0 25px;
@@ -29,7 +30,7 @@
 /* CARD */
 .card-container {
   display: flex;
-  width: 800px;
+  width: min(800px, 100%);
   height: auto;
   background: linear-gradient(to bottom, rgb(154 166 201), rgb(214, 164, 164));
   border-radius: 12px;
@@ -48,6 +49,15 @@
   padding: 30px;
   text-align: left;
   color: #ffffff;
+}
+
+.image {
+  flex: 0 0 auto;
+}
+
+.description {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .description h2 {
@@ -111,7 +121,7 @@ a:hover {
 
 /* RESPONSIVE */
 @media (max-width: 576px) {
-  .container {
+  .card-page {
     height: 100vh;
     padding: 0 15px;
   }
@@ -119,7 +129,7 @@ a:hover {
     display: flex;
     flex-direction: column-reverse;
     background: linear-gradient(to bottom, rgb(154 166 201), rgb(214, 164, 164));
-    width: 750px;
+    width: 100%;
     margin-top: 12px;
     margin-bottom: 12px;
   }
