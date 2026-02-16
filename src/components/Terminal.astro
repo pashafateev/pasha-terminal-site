@@ -91,6 +91,8 @@ const { path = '~', status = 'READY' } = Astro.props;
   .terminal-content {
     padding: 24px 16px;
     overflow-x: auto;
+    contain: paint;
+    will-change: transform, opacity;
   }
 
   @media (min-width: 768px) {

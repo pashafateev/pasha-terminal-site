@@ -23,6 +23,10 @@ body {
   padding: 0;
 }
 
+html {
+  background: var(--term-bg);
+}
+
 body {
   min-height: 100vh;
   font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -117,6 +121,17 @@ html[data-astro-transition="back"]::view-transition-old(terminal-content) {
 
 html[data-astro-transition="back"]::view-transition-new(terminal-content) {
   animation: 240ms ease-out both pane-enter-from-left;
+}
+
+::view-transition-group(root),
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  mix-blend-mode: normal;
 }
 
 @keyframes cursor-blink {
