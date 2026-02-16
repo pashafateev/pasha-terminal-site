@@ -1,5 +1,4 @@
 ---
-import { ViewTransitions } from 'astro:transitions';
 import Terminal from '../components/Terminal.astro';
 
 const {
@@ -22,13 +21,11 @@ import '../styles/global.css';
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <script is:inline>
       try {
-        if (/dia/i.test(navigator.userAgent)) {
-          document.startViewTransition = undefined;
-          document.documentElement.dataset.disableViewTransitions = 'true';
-        }
+        const nav = performance.getEntriesByType('navigation')[0];
+        document.documentElement.dataset.navDirection =
+          nav && nav.type === 'back_forward' ? 'back' : 'forward';
       } catch {}
     </script>
-    <ViewTransitions fallback="none" />
     <title>{title}</title>
   </head>
   <body>
