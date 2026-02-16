@@ -17,7 +17,7 @@ const { path = '~', status = 'READY' } = Astro.props;
     <p class="terminal-title">pasha@portfolio:{path}</p>
   </header>
 
-  <div class="terminal-content">
+  <div class="terminal-content" transition:name="terminal-content">
     <slot />
   </div>
 

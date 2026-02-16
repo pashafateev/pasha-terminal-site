@@ -1,35 +1,34 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Terminal from "../components/Terminal.astro";
 ---
 
 <BaseLayout
   title="Pasha Fateev | Software Engineer"
   description="Software Engineer with a musical background, working with Python and Go. Former UW CS grad bringing creativity to code."
+  path="~"
+  status="HOME"
 >
-  <Terminal path="~" status="HOME">
-    <div class="output">
-      <p><span class="prompt">pasha@portfolio:~$</span> whoami</p>
-      <p class="value">Pasha Fateev - Software Engineer</p>
+  <div class="output">
+    <p><span class="prompt">pasha@portfolio:~$</span> whoami</p>
+    <p class="value">Pasha Fateev - Software Engineer</p>
 
-      <p><span class="prompt">pasha@portfolio:~$</span> cat about.txt</p>
-      <p class="value">
-        Backend engineer focused on Python and Go, building event-driven systems and durable integrations.
-        I care about clear APIs, reliable automation, and practical developer experience.
-      </p>
+    <p><span class="prompt">pasha@portfolio:~$</span> cat about.txt</p>
+    <p class="value">
+      Backend engineer focused on Python and Go, building event-driven systems and durable integrations.
+      I care about clear APIs, reliable automation, and practical developer experience.
+    </p>
 
-      <p><span class="prompt">pasha@portfolio:~$</span> ls links/</p>
-      <ul class="links">
-        <li><a href="https://github.com/pashafateev" target="_blank" rel="noreferrer">github</a></li>
-        <li><a href="https://www.linkedin.com/in/pashafateev/" target="_blank" rel="noreferrer">linkedin</a></li>
-        <li><a href="/blog">blog</a></li>
-        <li><a href="/files/resume-cv.pdf" target="_blank" rel="noreferrer">resume.pdf</a></li>
-      </ul>
+    <p><span class="prompt">pasha@portfolio:~$</span> ls links/</p>
+    <ul class="links">
+      <li><a href="https://github.com/pashafateev" target="_blank" rel="noreferrer">github</a></li>
+      <li><a href="https://www.linkedin.com/in/pashafateev/" target="_blank" rel="noreferrer">linkedin</a></li>
+      <li><a href="/blog">blog</a></li>
+      <li><a href="/files/resume-cv.pdf" target="_blank" rel="noreferrer">resume.pdf</a></li>
+    </ul>
 
-      <p><span class="prompt">pasha@portfolio:~$</span> help</p>
-      <p class="value">Open links above or navigate to <a href="/blog">/blog</a> to read posts.<span class="cursor"></span></p>
-    </div>
-  </Terminal>
+    <p><span class="prompt">pasha@portfolio:~$</span> help</p>
+    <p class="value">Open links above or navigate to <a href="/blog">/blog</a> to read posts.<span class="cursor"></span></p>
+  </div>
 </BaseLayout>
 
 <style>

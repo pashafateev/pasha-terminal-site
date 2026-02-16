@@ -59,6 +59,66 @@ a:hover {
   animation: cursor-blink 1s step-end infinite;
 }
 
+@keyframes pane-enter-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pane-enter-from-left {
+  from {
+    opacity: 0;
+    transform: translateX(-26px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pane-exit-to-left {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+@keyframes pane-exit-to-right {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+}
+
+html[data-astro-transition="forward"]::view-transition-old(terminal-content) {
+  animation: 180ms ease-out both pane-exit-to-left;
+}
+
+html[data-astro-transition="forward"]::view-transition-new(terminal-content) {
+  animation: 240ms ease-out both pane-enter-from-right;
+}
+
+html[data-astro-transition="back"]::view-transition-old(terminal-content) {
+  animation: 180ms ease-out both pane-exit-to-right;
+}
+
+html[data-astro-transition="back"]::view-transition-new(terminal-content) {
+  animation: 240ms ease-out both pane-enter-from-left;
+}
+
 @keyframes cursor-blink {
   0%, 49% {
     opacity: 1;
@@ -76,5 +136,10 @@ a:hover {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }
