@@ -46,23 +46,35 @@
     const updateCursorPosition = () => {
       if (!cursor || !promptEntry || !promptLabel || !(input instanceof HTMLInputElement)) return;
       
-      // Set prompt width CSS variable
-      const promptWidth = promptLabel.getBoundingClientRect().width;
-      promptEntry.style.setProperty('--prompt-width', `${promptWidth}px`);
-      
-      // Measure text up to cursor position
-      const textBeforeCursor = input.value.substring(0, input.selectionStart || 0);
-      
-      // Create temporary span to measure width
-      const temp = document.createElement('span');
-      temp.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font:inherit;';
-      temp.textContent = textBeforeCursor || '';
-      document.body.appendChild(temp);
-      const width = temp.getBoundingClientRect().width;
-      document.body.removeChild(temp);
-      
-      // Position cursor
-      cursor.style.transform = `translateX(${width}px)`;
+      // Use requestAnimationFrame to ensure DOM is updated
+      requestAnimationFrame(() => {
+        // Set prompt width CSS variable
+        const promptWidth = promptLabel.getBoundingClientRect().width;
+        promptEntry.style.setProperty('--prompt-width', `${promptWidth}px`);
+        
+        // Measure text up to cursor position
+        const textBeforeCursor = input.value.substring(0, input.selectionStart || 0);
+        
+        // Create temporary span to measure width - copy computed styles
+        const temp = document.createElement('span');
+        const computedStyle = window.getComputedStyle(input);
+        temp.style.cssText = `
+          position: absolute;
+          visibility: hidden;
+          white-space: pre;
+          font-family: ${computedStyle.fontFamily};
+          font-size: ${computedStyle.fontSize};
+          font-weight: ${computedStyle.fontWeight};
+          letter-spacing: ${computedStyle.letterSpacing};
+        `;
+        temp.textContent = textBeforeCursor || '';
+        document.body.appendChild(temp);
+        const width = temp.getBoundingClientRect().width;
+        document.body.removeChild(temp);
+        
+        // Position cursor
+        cursor.style.transform = `translateX(${width}px)`;
+      });
     };
 
     const isEditableTarget = (target) => {
