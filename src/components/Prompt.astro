@@ -44,37 +44,33 @@
     const promptLabel = document.querySelector('.prompt-entry .prompt');
 
     const updateCursorPosition = () => {
-      if (!cursor || !promptEntry || !promptLabel || !(input instanceof HTMLInputElement)) return;
+      if (!cursor || !promptEntry || !promptLabel || !(input instanceof HTMLInputElement)) {
+        console.warn('updateCursorPosition: missing element', { cursor, promptEntry, promptLabel, input });
+        return;
+      }
       
-      // Use requestAnimationFrame to ensure DOM is updated
-      requestAnimationFrame(() => {
-        // Set prompt width CSS variable
-        const promptWidth = promptLabel.getBoundingClientRect().width;
-        promptEntry.style.setProperty('--prompt-width', `${promptWidth}px`);
-        
-        // Measure text up to cursor position
-        const textBeforeCursor = input.value.substring(0, input.selectionStart || 0);
-        
-        // Create temporary span to measure width - copy computed styles
-        const temp = document.createElement('span');
-        const computedStyle = window.getComputedStyle(input);
-        temp.style.cssText = `
-          position: absolute;
-          visibility: hidden;
-          white-space: pre;
-          font-family: ${computedStyle.fontFamily};
-          font-size: ${computedStyle.fontSize};
-          font-weight: ${computedStyle.fontWeight};
-          letter-spacing: ${computedStyle.letterSpacing};
-        `;
-        temp.textContent = textBeforeCursor || '';
-        document.body.appendChild(temp);
-        const width = temp.getBoundingClientRect().width;
-        document.body.removeChild(temp);
-        
-        // Position cursor
-        cursor.style.transform = `translateX(${width}px)`;
-      });
+      // Set prompt width CSS variable
+      const promptWidth = promptLabel.getBoundingClientRect().width;
+      promptEntry.style.setProperty('--prompt-width', `${promptWidth}px`);
+      
+      // Measure text up to cursor position
+      const cursorPos = input.selectionStart || 0;
+      const textBeforeCursor = input.value.substring(0, cursorPos);
+      
+      // Create temporary span to measure width - use canvas for more accurate measurement
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+      
+      const computedStyle = window.getComputedStyle(input);
+      ctx.font = `${computedStyle.fontSize} ${computedStyle.fontFamily}`;
+      const metrics = ctx.measureText(textBeforeCursor);
+      const width = metrics.width;
+      
+      console.log('Cursor update:', { textBeforeCursor, width, cursorPos, inputValue: input.value });
+      
+      // Position cursor
+      cursor.style.transform = `translateX(${width}px)`;
     };
 
     const isEditableTarget = (target) => {
