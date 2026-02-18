@@ -161,6 +161,13 @@
       // Preserve terminal behavior: clear should wipe the screen entirely, including the typed line.
       if (command === 'clear') {
         output.innerHTML = '';
+    output.scrollTop = 0;
+    const terminalContent = section.closest('.terminal-content') || section.parentElement;
+    if (terminalContent) {
+      terminalContent.scrollTop = 0;
+    }
+    commandHistory = [];
+    historyIndex = 0;
         return;
       }
 
