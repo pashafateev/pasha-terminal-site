@@ -39,6 +39,32 @@
     const commandHistory = [];
     let historyIndex = 0;
 
+    const cursor = document.querySelector('.cursor');
+    const promptEntry = document.querySelector('.prompt-entry');
+    const promptLabel = document.querySelector('.prompt-entry .prompt');
+
+    const updateCursorPosition = () => {
+      if (!cursor || !promptEntry || !promptLabel || !(input instanceof HTMLInputElement)) return;
+      
+      // Set prompt width CSS variable
+      const promptWidth = promptLabel.getBoundingClientRect().width;
+      promptEntry.style.setProperty('--prompt-width', `${promptWidth}px`);
+      
+      // Measure text up to cursor position
+      const textBeforeCursor = input.value.substring(0, input.selectionStart || 0);
+      
+      // Create temporary span to measure width
+      const temp = document.createElement('span');
+      temp.style.cssText = 'position:absolute;visibility:hidden;white-space:pre;font:inherit;';
+      temp.textContent = textBeforeCursor || '';
+      document.body.appendChild(temp);
+      const width = temp.getBoundingClientRect().width;
+      document.body.removeChild(temp);
+      
+      // Position cursor
+      cursor.style.transform = `translateX(${width}px)`;
+    };
+
     const isEditableTarget = (target) => {
       if (!(target instanceof HTMLElement)) return false;
       if (target.isContentEditable) return true;
@@ -159,7 +185,26 @@
 
       runCommand(value);
       input.value = '';
+      updateCursorPosition();
     };
+
+    // Update cursor on input
+    input.addEventListener('input', updateCursorPosition);
+    input.addEventListener('click', updateCursorPosition);
+    input.addEventListener('keyup', updateCursorPosition);
+    
+    // Show/hide cursor based on focus
+    input.addEventListener('focus', () => {
+      if (cursor) cursor.style.opacity = '1';
+      updateCursorPosition();
+    });
+    
+    input.addEventListener('blur', () => {
+      if (cursor) cursor.style.opacity = '0';
+    });
+    
+    // Initialize cursor position
+    updateCursorPosition();
 
     input.addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
@@ -173,6 +218,7 @@
         event.preventDefault();
         historyIndex = Math.max(0, historyIndex - 1);
         input.value = commandHistory[historyIndex] ?? '';
+        setTimeout(updateCursorPosition, 0);
         return;
       }
 
@@ -181,6 +227,7 @@
         event.preventDefault();
         historyIndex = Math.min(commandHistory.length, historyIndex + 1);
         input.value = historyIndex === commandHistory.length ? '' : commandHistory[historyIndex] ?? '';
+        setTimeout(updateCursorPosition, 0);
       }
     });
 
@@ -233,11 +280,24 @@
   }
 
   .prompt-entry {
+    position: relative;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
     gap: 8px;
     align-items: center;
     min-height: 44px;
+  }
+  
+  .cursor {
+    position: absolute;
+    left: calc(var(--prompt-width, 0px) + 8px);
+    pointer-events: none;
+    transition: transform 50ms ease-out;
+    opacity: 0;
+  }
+  
+  .prompt-input:focus ~ .cursor {
+    opacity: 1;
   }
 
   .prompt-input {
