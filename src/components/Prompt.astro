@@ -81,11 +81,35 @@
       const fontSize = parseFloat(inputStyle.fontSize) || 16;
       const parsedLineHeight = parseFloat(inputStyle.lineHeight);
       const lineHeight = Number.isFinite(parsedLineHeight) ? parsedLineHeight : fontSize * 1.2;
-      const cursorHeight = fontSize;
+
+      let metricAscent = fontSize * 0.8;
+      let metricDescent = Math.max(0, fontSize - metricAscent);
+
+      if (context) {
+        context.font = inputStyle.font;
+        const metrics = context.measureText('Mg');
+        const ascent =
+          metrics.fontBoundingBoxAscent ||
+          metrics.actualBoundingBoxAscent ||
+          metricAscent;
+        const descent =
+          metrics.fontBoundingBoxDescent ||
+          metrics.actualBoundingBoxDescent ||
+          metricDescent;
+
+        if (Number.isFinite(ascent) && ascent > 0) metricAscent = ascent;
+        if (Number.isFinite(descent) && descent >= 0) metricDescent = descent;
+      }
+
+      const fontBoxHeight = metricAscent + metricDescent;
       const lineTopOffset = Math.max(0, (inputRect.height - lineHeight) / 2);
-      const glyphTopOffset = Math.max(0, (lineHeight - fontSize) / 2);
-      const cursorCompensation = Math.max(0, (fontSize - cursorHeight) / 2);
-      const top = inputRect.top - entryRect.top + lineTopOffset + glyphTopOffset + cursorCompensation;
+      const baselineFromLineTop = Math.max(0, (lineHeight - fontBoxHeight) / 2) + metricAscent;
+      const baselineY = inputRect.top - entryRect.top + lineTopOffset + baselineFromLineTop;
+
+      const cursorHeight = fontSize;
+      const dpr = window.devicePixelRatio || 1;
+      const rawTop = baselineY - cursorHeight - (0.5 / dpr);
+      const top = Math.round(rawTop * dpr) / dpr;
 
       cursor.style.left = `calc(var(--prompt-width, 0px) + 8px + ${Math.max(0, width - input.scrollLeft)}px)`;
       cursor.style.top = `${top}px`;
@@ -163,7 +187,7 @@
 
       // Preserve terminal behavior: clear should wipe the screen entirely, including the typed line.
       if (command === 'clear') {
-        output.innerHTML = '';
+        output.innerHTML = '';\n        input.value = '';\n        input.blur();\n        input.focus();
         return;
       }
 
