@@ -1,0 +1,256 @@
+<section id="prompt-section" class="prompt-shell" aria-label="Interactive terminal prompt" tabindex="-1">
+  <div class="prompt-output" data-prompt-output role="log" aria-live="polite" aria-relevant="additions"></div>
+
+  <form class="prompt-form" data-prompt-form method="get" action="#prompt-section" aria-label="Run terminal command">
+    <label for="prompt-command" class="sr-only">Terminal command</label>
+    <span class="prompt" aria-hidden="true">pasha@portfolio:~$</span>
+    <input
+      id="prompt-command"
+      name="cmd"
+      class="prompt-input"
+      type="text"
+      inputmode="text"
+      autocomplete="off"
+      spellcheck="false"
+      aria-describedby="prompt-help"
+      placeholder="type a command"
+    >
+    <button type="submit" class="prompt-submit">run</button>
+  </form>
+
+  <p id="prompt-help" class="prompt-help">
+    Commands: about, blog, links, resume, help, clear. Shortcuts: / focus, Esc blur, q back.
+  </p>
+
+  <noscript>
+    <p class="prompt-help">JavaScript is off. Use the links and sections above.</p>
+  </noscript>
+</section>
+
+<script is:inline>
+  (() => {
+    const form = document.querySelector('[data-prompt-form]');
+    const input = document.getElementById('prompt-command');
+    const output = document.querySelector('[data-prompt-output]');
+
+    if (!form || !input || !output) {
+      return;
+    }
+
+    const commandHistory = [];
+    let historyIndex = 0;
+
+    const isEditableTarget = (target) => {
+      if (!(target instanceof HTMLElement)) return false;
+      if (target.isContentEditable) return true;
+      const tag = target.tagName;
+      return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+    };
+
+    const focusSection = (id) => {
+      const section = document.getElementById(id);
+      if (!section) return;
+
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      section.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      if (section instanceof HTMLElement) {
+        section.focus({ preventScroll: true });
+      }
+    };
+
+    const appendLine = (text, type = 'response') => {
+      const line = document.createElement('p');
+      line.className = `prompt-line prompt-line-${type}`;
+
+      if (type === 'command') {
+        const promptLabel = document.createElement('span');
+        promptLabel.className = 'prompt';
+        promptLabel.textContent = 'pasha@portfolio:~$';
+        line.appendChild(promptLabel);
+        line.append(` ${text}`);
+      } else {
+        line.textContent = text;
+      }
+
+      output.appendChild(line);
+      output.scrollTop = output.scrollHeight;
+    };
+
+    const printHelp = () => {
+      appendLine('about  - jump to the about section');
+      appendLine('blog   - open /blog');
+      appendLine('links  - jump to links');
+      appendLine('resume - open resume.pdf');
+      appendLine('help   - show this help');
+      appendLine('clear  - clear prompt output');
+    };
+
+    const runCommand = (rawValue) => {
+      const value = rawValue.trim();
+      if (!value) return;
+
+      appendLine(value, 'command');
+
+      const command = value.toLowerCase();
+
+      switch (command) {
+        case 'about':
+          focusSection('about-section');
+          appendLine('Moved focus to About.');
+          break;
+        case 'blog':
+          window.location.assign('/blog');
+          break;
+        case 'links':
+          focusSection('links-section');
+          appendLine('Moved focus to Links.');
+          break;
+        case 'resume': {
+          const resumeUrl = '/files/resume-cv.pdf';
+          const win = window.open(resumeUrl, '_blank', 'noopener');
+          if (!win) {
+            window.location.assign(resumeUrl);
+          }
+          appendLine('Opening resume.pdf...');
+          break;
+        }
+        case 'help':
+          printHelp();
+          break;
+        case 'clear':
+          output.innerHTML = '';
+          break;
+        default:
+          appendLine(`Command not found: ${command}. Type "help" for available commands.`);
+      }
+    };
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const value = input.value.trim();
+      if (!value) return;
+
+      commandHistory.push(value);
+      historyIndex = commandHistory.length;
+
+      runCommand(value);
+      input.value = '';
+    });
+
+    input.addEventListener('keydown', (event) => {
+      if (event.key === 'ArrowUp') {
+        if (commandHistory.length === 0) return;
+        event.preventDefault();
+        historyIndex = Math.max(0, historyIndex - 1);
+        input.value = commandHistory[historyIndex] ?? '';
+      }
+
+      if (event.key === 'ArrowDown') {
+        if (commandHistory.length === 0) return;
+        event.preventDefault();
+        historyIndex = Math.min(commandHistory.length, historyIndex + 1);
+        input.value = historyIndex === commandHistory.length ? '' : commandHistory[historyIndex] ?? '';
+      }
+    });
+
+    document.addEventListener('keydown', (event) => {
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
+        return;
+      }
+
+      const target = event.target;
+
+      if (event.key === '/' && !isEditableTarget(target)) {
+        event.preventDefault();
+        input.focus();
+        return;
+      }
+
+      if (event.key === 'Escape' && document.activeElement === input) {
+        input.blur();
+        return;
+      }
+
+      if ((event.key === 'q' || event.key === 'Q') && !isEditableTarget(target) && document.activeElement !== input) {
+        window.history.back();
+      }
+    });
+  })();
+</script>
+
+<style>
+  .prompt-shell {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .prompt-output {
+    display: grid;
+    gap: 4px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  .prompt-line {
+    margin: 0;
+  }
+
+  .prompt-line-command {
+    color: var(--term-fg);
+  }
+
+  .prompt-line-response {
+    color: var(--term-dim);
+  }
+
+  .prompt-form {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .prompt-input {
+    width: 100%;
+    border: 1px solid rgba(97, 175, 239, 0.35);
+    border-radius: 6px;
+    padding: 6px 8px;
+    color: var(--term-fg);
+    background: rgba(0, 0, 0, 0.2);
+    font: inherit;
+  }
+
+  .prompt-input:focus {
+    outline: 2px solid var(--term-green);
+    outline-offset: 1px;
+  }
+
+  .prompt-submit {
+    border: 1px solid rgba(97, 175, 239, 0.35);
+    border-radius: 6px;
+    padding: 6px 10px;
+    color: var(--term-fg);
+    background: rgba(97, 175, 239, 0.12);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  .prompt-help {
+    margin: 0;
+    color: var(--term-dim);
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+</style>
