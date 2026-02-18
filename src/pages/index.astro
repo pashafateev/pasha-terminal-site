@@ -5,40 +5,11 @@ import Prompt from "../components/Prompt.astro";
 
 <BaseLayout
   title="Pasha Fateev | Software Engineer"
-  description="Software Engineer with a musical background, working with Python and Go. Former UW CS grad bringing creativity to code."
+  description="Software Engineer working with Python and Go on reliable automation and developer workflows."
   path="~"
   status="HOME"
 >
   <div class="output" aria-label="Terminal home output">
-    <section id="whoami-section" aria-label="Identity output" tabindex="-1">
-      <p><span class="prompt">pasha@portfolio:~$</span> whoami</p>
-      <p class="value">Pasha Fateev - Software Engineer</p>
-    </section>
-
-    <section id="about-section" aria-label="About output" tabindex="-1">
-      <p><span class="prompt">pasha@portfolio:~$</span> cat about.txt</p>
-      <p class="value">
-        Currently at Temporal, working in release engineering on reliable pipelines and production automation.
-        Backend engineer focused on Python and Go, with a bias for clear APIs, durable integrations, and practical developer experience.
-        Building with agentic coding workflows daily; AI already ships cleaner first drafts than I do, so this feels less like training my replacement and more like my replacement already has merge access.
-      </p>
-    </section>
-
-    <section id="links-section" aria-label="Links output" tabindex="-1">
-      <p><span class="prompt">pasha@portfolio:~$</span> ls links/</p>
-      <ul class="links">
-        <li><a href="https://github.com/pashafateev" target="_blank" rel="noreferrer">github</a></li>
-        <li><a href="https://www.linkedin.com/in/pashafateev/" target="_blank" rel="noreferrer">linkedin</a></li>
-        <li><a href="/blog">blog</a></li>
-        <li><a href="/files/resume-cv.pdf" target="_blank" rel="noreferrer">resume.pdf</a></li>
-      </ul>
-    </section>
-
-    <section id="help-section" aria-label="Help output" tabindex="-1">
-      <p><span class="prompt">pasha@portfolio:~$</span> help</p>
-      <p class="value">Open links above or navigate to <a href="/blog">/blog</a> to read posts.</p>
-    </section>
-
     <Prompt />
   </div>
 </BaseLayout>
@@ -47,29 +18,5 @@ import Prompt from "../components/Prompt.astro";
   .output {
     display: grid;
     gap: 12px;
-  }
-
-  .output p {
-    margin: 0;
-  }
-
-  .output section {
-    display: grid;
-    gap: 12px;
-  }
-
-  .prompt {
-    color: var(--term-green);
-  }
-
-  .value {
-    color: var(--term-fg);
-  }
-
-  .links {
-    margin: 0;
-    padding-left: 20px;
-    display: grid;
-    gap: 4px;
   }
 </style>

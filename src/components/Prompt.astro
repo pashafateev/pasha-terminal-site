@@ -1,7 +1,7 @@
-<section id="prompt-section" class="prompt-shell" aria-label="Interactive terminal prompt" tabindex="-1">
+<section id="prompt-section" class="prompt-shell" aria-label="Interactive terminal prompt">
   <div class="prompt-output" data-prompt-output role="log" aria-live="polite" aria-relevant="additions"></div>
 
-  <form class="prompt-form" data-prompt-form method="get" action="#prompt-section" aria-label="Run terminal command" hidden>
+  <div class="prompt-entry">
     <label for="prompt-command" class="sr-only">Terminal command</label>
     <span class="prompt" aria-hidden="true">pasha@portfolio:~$</span>
     <input
@@ -12,35 +12,30 @@
       inputmode="text"
       autocomplete="off"
       spellcheck="false"
-      aria-describedby="prompt-help"
-      placeholder="type a command"
+      aria-describedby="prompt-hint"
+      placeholder=""
     >
-    <button type="submit" class="prompt-submit">run</button>
-  </form>
+    <span class="cursor" aria-hidden="true"></span>
+  </div>
 
-  <p id="prompt-help" class="prompt-help">
-    Commands: about, blog, links, resume, help, clear. Shortcuts: / focus, Esc blur.
-  </p>
+  <p id="prompt-hint" class="prompt-hint">Type <code>help</code> and press Enter. Shortcut: <code>/</code> focuses prompt.</p>
 
   <noscript>
-    <p class="prompt-help">JavaScript is off. Use the links and sections above.</p>
+    <p class="prompt-hint">JavaScript is off. Visit <a href="/blog">/blog</a> or open <a href="/files/resume-cv.pdf">resume.pdf</a>.</p>
   </noscript>
 </section>
 
 <script is:inline>
   (() => {
-    const form = document.querySelector('[data-prompt-form]');
     const input = document.getElementById('prompt-command');
     const output = document.querySelector('[data-prompt-output]');
 
-    if (!form || !input || !output) {
+    if (!input || !output) {
       return;
     }
 
-    form.hidden = false;
-
     const MAX_HISTORY = 50;
-    const MAX_OUTPUT_LINES = 200;
+    const MAX_OUTPUT_LINES = 180;
     const commandHistory = [];
     let historyIndex = 0;
 
@@ -51,74 +46,89 @@
       return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
     };
 
-    const focusSection = (id) => {
-      const section = document.getElementById(id);
-      if (!section) return;
-
-      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      try {
-        section.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
-      } catch {
-        section.scrollIntoView();
-      }
-      if (section instanceof HTMLElement) {
-        try {
-          section.focus({ preventScroll: true });
-        } catch {
-          section.focus();
-        }
-      }
-    };
-
-    const appendLine = (text, type = 'response') => {
-      const line = document.createElement('p');
-      line.className = `prompt-line prompt-line-${type}`;
-
-      if (type === 'command') {
-        const promptLabel = document.createElement('span');
-        promptLabel.className = 'prompt';
-        promptLabel.textContent = 'pasha@portfolio:~$';
-        line.appendChild(promptLabel);
-        line.append(` ${text}`);
-      } else {
-        line.textContent = text;
-      }
-
-      output.appendChild(line);
+    const trimOutput = () => {
       while (output.childElementCount > MAX_OUTPUT_LINES) {
         output.firstElementChild?.remove();
       }
       output.scrollTop = output.scrollHeight;
     };
 
+    const appendCommand = (text) => {
+      const line = document.createElement('p');
+      line.className = 'prompt-line prompt-line-command';
+
+      const promptLabel = document.createElement('span');
+      promptLabel.className = 'prompt';
+      promptLabel.textContent = 'pasha@portfolio:~$';
+      line.appendChild(promptLabel);
+      line.append(` ${text}`);
+
+      output.appendChild(line);
+      trimOutput();
+    };
+
+    const appendResponse = (text) => {
+      const line = document.createElement('p');
+      line.className = 'prompt-line prompt-line-response';
+      line.textContent = text;
+      output.appendChild(line);
+      trimOutput();
+    };
+
+    const appendLink = (label, href, external = false) => {
+      const line = document.createElement('p');
+      line.className = 'prompt-line prompt-line-response';
+
+      const anchor = document.createElement('a');
+      anchor.className = 'prompt-link';
+      anchor.href = href;
+      anchor.textContent = label;
+      if (external) {
+        anchor.target = '_blank';
+        anchor.rel = 'noreferrer noopener';
+      }
+
+      line.appendChild(anchor);
+      output.appendChild(line);
+      trimOutput();
+    };
+
     const printHelp = () => {
-      appendLine('about  - jump to the about section');
-      appendLine('blog   - open /blog');
-      appendLine('links  - jump to links');
-      appendLine('resume - open resume.pdf');
-      appendLine('help   - show this help');
-      appendLine('clear  - clear prompt output');
+      appendResponse('about  - show short bio');
+      appendResponse('links  - show primary links');
+      appendResponse('blog   - open /blog');
+      appendResponse('resume - open resume.pdf');
+      appendResponse('clear  - clear terminal output');
+      appendResponse('help   - show this help');
     };
 
     const runCommand = (rawValue) => {
       const value = rawValue.trim();
       if (!value) return;
 
-      appendLine(value, 'command');
-
       const command = value.toLowerCase();
+
+      // Preserve terminal behavior: clear should wipe the screen entirely, including the typed line.
+      if (command === 'clear') {
+        output.innerHTML = '';
+        return;
+      }
+
+      appendCommand(value);
 
       switch (command) {
         case 'about':
-          focusSection('about-section');
-          appendLine('Moved focus to About.');
+          appendResponse('Pasha Fateev - software engineer focused on reliable backend systems with Python and Go.');
+          appendResponse('Currently building release engineering automation and practical AI-assisted workflows.');
+          break;
+        case 'links':
+          appendLink('github     https://github.com/pashafateev', 'https://github.com/pashafateev', true);
+          appendLink('linkedin   https://www.linkedin.com/in/pashafateev/', 'https://www.linkedin.com/in/pashafateev/', true);
+          appendLink('blog       /blog', '/blog');
+          appendLink('resume     /files/resume-cv.pdf', '/files/resume-cv.pdf', true);
           break;
         case 'blog':
           window.location.assign('/blog');
-          break;
-        case 'links':
-          focusSection('links-section');
-          appendLine('Moved focus to Links.');
           break;
         case 'resume': {
           const resumeUrl = '/files/resume-cv.pdf';
@@ -126,23 +136,18 @@
           if (!win) {
             window.location.assign(resumeUrl);
           }
-          appendLine('Opening resume.pdf...');
+          appendResponse('Opening resume.pdf...');
           break;
         }
         case 'help':
           printHelp();
           break;
-        case 'clear':
-          output.innerHTML = '';
-          break;
         default:
-          appendLine(`Command not found: ${command}. Type "help" for available commands.`);
+          appendResponse(`Command not found: ${command}. Type "help" for available commands.`);
       }
     };
 
-    form.addEventListener('submit', (event) => {
-      event.preventDefault();
-
+    const submitCommand = () => {
       const value = input.value.trim();
       if (!value) return;
 
@@ -154,14 +159,21 @@
 
       runCommand(value);
       input.value = '';
-    });
+    };
 
     input.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        submitCommand();
+        return;
+      }
+
       if (event.key === 'ArrowUp') {
         if (commandHistory.length === 0) return;
         event.preventDefault();
         historyIndex = Math.max(0, historyIndex - 1);
         input.value = commandHistory[historyIndex] ?? '';
+        return;
       }
 
       if (event.key === 'ArrowDown') {
@@ -187,9 +199,7 @@
 
       if (event.key === 'Escape' && document.activeElement === input) {
         input.blur();
-        return;
       }
-
     });
   })();
 </script>
@@ -197,19 +207,21 @@
 <style>
   .prompt-shell {
     display: grid;
-    gap: 8px;
-    margin-top: 8px;
+    gap: 10px;
+    margin-top: 4px;
   }
 
   .prompt-output {
     display: grid;
-    gap: 4px;
-    max-height: 200px;
+    gap: 6px;
+    max-height: min(48vh, 320px);
     overflow-y: auto;
+    padding-right: 4px;
   }
 
   .prompt-line {
     margin: 0;
+    word-break: break-word;
   }
 
   .prompt-line-command {
@@ -220,41 +232,56 @@
     color: var(--term-dim);
   }
 
-  .prompt-form {
+  .prompt-entry {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 8px;
     align-items: center;
+    min-height: 44px;
   }
 
   .prompt-input {
     width: 100%;
-    border: 1px solid rgba(97, 175, 239, 0.35);
-    border-radius: 6px;
-    padding: 6px 8px;
+    border: 0;
     color: var(--term-fg);
-    background: rgba(0, 0, 0, 0.2);
+    background: transparent;
     font: inherit;
+    min-height: 44px;
+    padding: 0;
+  }
+
+  .prompt-input::placeholder {
+    color: var(--term-dim);
+    opacity: 0.7;
   }
 
   .prompt-input:focus {
-    outline: 2px solid var(--term-green);
-    outline-offset: 1px;
+    outline: none;
   }
 
-  .prompt-submit {
-    border: 1px solid rgba(97, 175, 239, 0.35);
-    border-radius: 6px;
-    padding: 6px 10px;
-    color: var(--term-fg);
-    background: rgba(97, 175, 239, 0.12);
-    font: inherit;
-    cursor: pointer;
-  }
-
-  .prompt-help {
+  .prompt-hint {
     margin: 0;
     color: var(--term-dim);
+    font-size: 0.9rem;
+  }
+
+  .prompt-hint code {
+    color: var(--term-green);
+    background: transparent;
+  }
+
+  .prompt-link {
+    color: var(--term-blue);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
+
+  .prompt-link:hover,
+  .prompt-link:focus-visible {
+    color: var(--term-green);
+    text-decoration: underline;
   }
 
   .sr-only {
