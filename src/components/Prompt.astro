@@ -1,7 +1,7 @@
 <section id="prompt-section" class="prompt-shell" aria-label="Interactive terminal prompt" tabindex="-1">
   <div class="prompt-output" data-prompt-output role="log" aria-live="polite" aria-relevant="additions"></div>
 
-  <form class="prompt-form" data-prompt-form method="get" action="#prompt-section" aria-label="Run terminal command">
+  <form class="prompt-form" data-prompt-form method="get" action="#prompt-section" aria-label="Run terminal command" hidden>
     <label for="prompt-command" class="sr-only">Terminal command</label>
     <span class="prompt" aria-hidden="true">pasha@portfolio:~$</span>
     <input
@@ -19,7 +19,7 @@
   </form>
 
   <p id="prompt-help" class="prompt-help">
-    Commands: about, blog, links, resume, help, clear. Shortcuts: / focus, Esc blur, q back.
+    Commands: about, blog, links, resume, help, clear. Shortcuts: / focus, Esc blur.
   </p>
 
   <noscript>
@@ -37,6 +37,10 @@
       return;
     }
 
+    form.hidden = false;
+
+    const MAX_HISTORY = 50;
+    const MAX_OUTPUT_LINES = 200;
     const commandHistory = [];
     let historyIndex = 0;
 
@@ -52,9 +56,17 @@
       if (!section) return;
 
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-      section.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      try {
+        section.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      } catch {
+        section.scrollIntoView();
+      }
       if (section instanceof HTMLElement) {
-        section.focus({ preventScroll: true });
+        try {
+          section.focus({ preventScroll: true });
+        } catch {
+          section.focus();
+        }
       }
     };
 
@@ -73,6 +85,9 @@
       }
 
       output.appendChild(line);
+      while (output.childElementCount > MAX_OUTPUT_LINES) {
+        output.firstElementChild?.remove();
+      }
       output.scrollTop = output.scrollHeight;
     };
 
@@ -132,6 +147,9 @@
       if (!value) return;
 
       commandHistory.push(value);
+      if (commandHistory.length > MAX_HISTORY) {
+        commandHistory.shift();
+      }
       historyIndex = commandHistory.length;
 
       runCommand(value);
@@ -172,9 +190,6 @@
         return;
       }
 
-      if ((event.key === 'q' || event.key === 'Q') && !isEditableTarget(target) && document.activeElement !== input) {
-        window.history.back();
-      }
     });
   })();
 </script>
