@@ -69,8 +69,8 @@
       
       console.log('Cursor update:', { textBeforeCursor, width, cursorPos, inputValue: input.value });
       
-      // Position cursor
-      cursor.style.transform = `translateX(${width}px)`;
+      // Position cursor - preserve Y centering
+      cursor.style.transform = `translateX(${width}px) translateY(-50%)`;
     };
 
     const isEditableTarget = (target) => {
@@ -296,12 +296,15 @@
     min-height: 44px;
   }
   
-  .cursor {
-    position: absolute;
+  .prompt-entry .cursor {
+    position: absolute !important;
     left: calc(var(--prompt-width, 0px) + 8px);
+    top: 50%;
     pointer-events: none;
     transition: transform 50ms ease-out;
     opacity: 0;
+    margin-left: 0;
+    display: block !important;
   }
   
   .prompt-input:focus ~ .cursor {
