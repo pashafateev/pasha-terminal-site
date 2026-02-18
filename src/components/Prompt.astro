@@ -43,7 +43,9 @@
     const cursor = section?.querySelector('.cursor');
     const promptEntry = section?.querySelector('.prompt-entry');
     const promptLabel = section?.querySelector('.prompt-entry .prompt');
-    const measure = document.createElement('span');\n    const canvas = document.createElement('canvas');\n    const context = canvas.getContext('2d');
+    const measure = document.createElement('span');
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
 
     const updateCursorPosition = () => {
       if (!cursor || !promptEntry || !promptLabel || !(input instanceof HTMLInputElement)) {
@@ -86,7 +88,8 @@
       const top = inputRect.top - entryRect.top + lineTopOffset + glyphTopOffset + cursorCompensation;
 
       cursor.style.left = `calc(var(--prompt-width, 0px) + 8px + ${Math.max(0, width - input.scrollLeft)}px)`;
-      cursor.style.top = `${top}px`;\n      cursor.style.height = `${cursorHeight}px`;
+      cursor.style.top = `${top}px`;
+      cursor.style.height = `${cursorHeight}px`;
     };
 
     const isEditableTarget = (target) => {
