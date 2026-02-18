@@ -82,10 +82,7 @@
       const parsedLineHeight = parseFloat(inputStyle.lineHeight);
       const lineHeight = Number.isFinite(parsedLineHeight) ? parsedLineHeight : fontSize * 1.2;
       const cursorHeight = fontSize;
-      const lineTopOffset = Math.max(0, (inputRect.height - lineHeight) / 2);
-      const glyphTopOffset = Math.max(0, (lineHeight - fontSize) / 2);
-      const cursorCompensation = Math.max(0, (fontSize - cursorHeight) / 2);
-      const top = inputRect.top - entryRect.top + lineTopOffset + glyphTopOffset + cursorCompensation;
+      const top = inputRect.top - entryRect.top + (inputRect.height - fontSize) / 2;
 
       cursor.style.left = `calc(var(--prompt-width, 0px) + 8px + ${Math.max(0, width - input.scrollLeft)}px)`;
       cursor.style.top = `${top}px`;
@@ -164,13 +161,15 @@
       // Preserve terminal behavior: clear should wipe the screen entirely, including the typed line.
       if (command === 'clear') {
         output.innerHTML = '';
-    output.scrollTop = 0;
-    const terminalContent = section.closest('.terminal-content') || section.parentElement;
-    if (terminalContent) {
-      terminalContent.scrollTop = 0;
-    }
-    commandHistory = [];
-    historyIndex = 0;
+        output.scrollTop = 0;
+        const terminalContent = section.closest('.terminal-content') || section.parentElement;
+        if (terminalContent) {
+          terminalContent.scrollTop = 0;
+        }
+        commandHistory.length = 0;
+        historyIndex = 0;
+        input.value = '';
+        updateCursorPosition();
         return;
       }
 
