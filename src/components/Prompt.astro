@@ -45,7 +45,6 @@
 
     const updateCursorPosition = () => {
       if (!cursor || !promptEntry || !promptLabel || !(input instanceof HTMLInputElement)) {
-        console.warn('updateCursorPosition: missing element', { cursor, promptEntry, promptLabel, input });
         return;
       }
       
@@ -57,7 +56,7 @@
       const cursorPos = input.selectionStart || 0;
       const textBeforeCursor = input.value.substring(0, cursorPos);
       
-      // Create temporary span to measure width - use canvas for more accurate measurement
+      // Use canvas measureText for accurate character width
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
@@ -67,10 +66,8 @@
       const metrics = ctx.measureText(textBeforeCursor);
       const width = metrics.width;
       
-      console.log('Cursor update:', { textBeforeCursor, width, cursorPos, inputValue: input.value });
-      
-      // Position cursor - preserve Y centering
-      cursor.style.transform = `translateX(${width}px) translateY(-50%)`;
+      // Position cursor - just X, CSS handles Y
+      cursor.style.left = `calc(var(--prompt-width, 0px) + 8px + ${width}px)`;
     };
 
     const isEditableTarget = (target) => {
@@ -300,10 +297,11 @@
     position: absolute !important;
     left: calc(var(--prompt-width, 0px) + 8px);
     top: 50%;
+    transform: translateY(-50%);
     pointer-events: none;
-    transition: transform 50ms ease-out;
+    transition: left 50ms ease-out;
     opacity: 0;
-    margin-left: 0;
+    margin: 0 !important;
     display: block !important;
   }
   
