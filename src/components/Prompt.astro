@@ -76,9 +76,14 @@
       const width = measure.getBoundingClientRect().width;
       const inputRect = input.getBoundingClientRect();
       const entryRect = promptEntry.getBoundingClientRect();
-      const cursorHeight = cursor.getBoundingClientRect().height || parseFloat(inputStyle.fontSize);
-      const verticalOffset = (inputRect.height - cursorHeight) / 2;
-      const top = inputRect.top - entryRect.top + verticalOffset;
+      const fontSize = parseFloat(inputStyle.fontSize) || 16;
+      const parsedLineHeight = parseFloat(inputStyle.lineHeight);
+      const lineHeight = Number.isFinite(parsedLineHeight) ? parsedLineHeight : fontSize * 1.2;
+      const cursorHeight = cursor.getBoundingClientRect().height || fontSize;
+      const lineTopOffset = Math.max(0, (inputRect.height - lineHeight) / 2);
+      const glyphTopOffset = Math.max(0, (lineHeight - fontSize) / 2);
+      const cursorCompensation = Math.max(0, (fontSize - cursorHeight) / 2);
+      const top = inputRect.top - entryRect.top + lineTopOffset + glyphTopOffset + cursorCompensation;
 
       cursor.style.left = `calc(var(--prompt-width, 0px) + 8px + ${Math.max(0, width - input.scrollLeft)}px)`;
       cursor.style.top = `${top}px`;
