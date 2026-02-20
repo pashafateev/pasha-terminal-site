@@ -1,5 +1,5 @@
 ---
-title: "Building Mycel"
+title: "Using OpenClaw to Build a Better OpenClaw"
 description: "Why I'm building a personal AI assistant from scratch."
 pubDate: 2026-02-20
 ---
