@@ -1,6 +1,6 @@
 ---
 title: "Building Mycel"
-description: "On building a personal AI assistant that works the way I do."
+description: "Why I'm building a personal AI assistant from scratch."
 pubDate: 2026-02-20
 ---
 
