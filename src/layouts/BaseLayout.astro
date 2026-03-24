@@ -10,6 +10,8 @@ const {
 } = Astro.props;
 import '../styles/global.css';
 
+const TWITTER_HANDLE = '@pashafateev'; // update if your X/Twitter handle differs
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const ogImageURL = new URL(image, Astro.site);
 ---
@@ -28,6 +30,8 @@ const ogImageURL = new URL(image, Astro.site);
     <meta property="og:image" content={ogImageURL}>
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content={TWITTER_HANDLE}>
+    <meta name="twitter:creator" content={TWITTER_HANDLE}>
     <meta name="twitter:title" content={title}>
     <meta name="twitter:description" content={description}>
     <meta name="twitter:image" content={ogImageURL}>

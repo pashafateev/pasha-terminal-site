@@ -1,5 +1,6 @@
 import rss from '@astrojs/rss';
 import { getCollection } from 'astro:content';
+import { marked } from 'marked';
 import type { APIContext } from 'astro';
 
 export async function GET(context: APIContext) {
@@ -14,7 +15,8 @@ export async function GET(context: APIContext) {
       title: post.data.title,
       description: post.data.description,
       pubDate: post.data.pubDate,
-      link: `/blog/${post.slug}/`,
+      link: `/blog/${post.slug}`,
+      content: marked.parse(post.body) as string,
     })),
     customData: '<language>en-us</language>',
   });
