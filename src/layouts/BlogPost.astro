@@ -3,7 +3,13 @@ import BaseLayout from './BaseLayout.astro';
 const { frontmatter } = Astro.props;
 ---
 
-<BaseLayout title={`${frontmatter.title} | Blog`} path="~/blog/post" status="READING">
+<BaseLayout
+  title={`${frontmatter.title} | Blog`}
+  description={frontmatter.description}
+  image={frontmatter.heroImage}
+  path="~/blog/post"
+  status="READING"
+>
   <header class="post-meta">
     <p><span class="prompt">pasha@portfolio:~/blog$</span> cat {frontmatter.title.toLowerCase().replaceAll(' ', '-')}.md</p>
     <h1>{frontmatter.title}</h1>
