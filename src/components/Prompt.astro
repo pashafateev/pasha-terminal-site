@@ -18,7 +18,7 @@
     <span class="cursor" aria-hidden="true"></span>
   </div>
 
-  <p id="prompt-hint" class="prompt-hint">Type <code>help</code> for commands · <code>Tab</code> completes · <code>/</code> focuses</p>
+  <p id="prompt-hint" class="prompt-hint">Type <code>help</code> for commands · <code>Tab</code> completes</p>
 
   <noscript>
     <p class="prompt-hint">JavaScript is off. Visit <a href="/blog">/blog</a> or open <a href="/files/resume-cv.pdf">resume.pdf</a>.</p>
@@ -152,9 +152,10 @@
       appendResponse('blog     - open /blog');
       appendResponse('resume   - open resume.pdf');
       appendResponse('clear    - clear terminal output');
+      appendResponse('cowsay   - make a cow say something');
       appendResponse('help     - show this help');
       appendResponse('──────────────────────────────────────');
-      appendResponse('Shortcuts: / focus  Tab complete  ? help');
+      appendResponse('Shortcuts: Tab complete  ? help');
     };
 
     const runCommand = (rawValue) => {
@@ -228,6 +229,8 @@
               clearInterval(id);
               appendResponse('');
               appendResponse('wake up, Neo...');
+              appendResponse('');
+              appendResponse("follow the white rabbit. try 'sudo'");
             }
           }, 80);
           break;
@@ -239,6 +242,8 @@
           appendResponse('Sorry, try again.');
           appendResponse('[sudo] password for pasha: ');
           appendResponse('sudo: 3 incorrect password attempts');
+          appendResponse('');
+          appendResponse("what system are you even on? try 'neofetch'");
           break;
         case 'neofetch': {
           const platform = navigator.userAgentData?.platform ?? navigator.platform ?? 'Web';
@@ -264,6 +269,10 @@
           appendResponse('            (__)\\       )\\/\\');
           appendResponse('                ||----w |');
           appendResponse('                ||     ||');
+          if (args.length === 0) {
+            appendResponse('');
+            appendResponse("the cow looks nervous... as if something is watching. try 'matrix'");
+          }
           break;
         }
         default:
@@ -351,12 +360,6 @@
       }
 
       const target = event.target;
-
-      if (event.key === '/' && !isEditableTarget(target)) {
-        event.preventDefault();
-        input.focus();
-        return;
-      }
 
       if (event.key === '?' && !isEditableTarget(target)) {
         event.preventDefault();
