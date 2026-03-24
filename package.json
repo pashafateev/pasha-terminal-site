@@ -11,6 +11,8 @@
     "post:new": "bash ./scripts/new-post.sh"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.17",
+    "@astrojs/sitemap": "^3.2.1",
     "astro": "^4.9.1"
   },
   "devDependencies": {
