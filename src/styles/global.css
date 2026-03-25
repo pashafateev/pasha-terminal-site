@@ -30,7 +30,7 @@ html {
 
 body {
   min-height: 100vh;
-  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 1rem;
   color: var(--term-fg);
   background:

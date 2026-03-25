@@ -95,11 +95,39 @@
       return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
     };
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const LINE_DELAY = prefersReducedMotion ? 0 : 18;
+    const printQueue = [];
+    let printing = false;
+    let drainTimer = 0;
+
     const trimOutput = () => {
       while (output.childElementCount > MAX_OUTPUT_LINES) {
         output.firstElementChild?.remove();
       }
       output.scrollTop = output.scrollHeight;
+    };
+
+    const flushQueue = () => {
+      if (printing || printQueue.length === 0) return;
+      printing = true;
+      const drain = () => {
+        if (printQueue.length === 0) {
+          printing = false;
+          drainTimer = 0;
+          return;
+        }
+        const el = printQueue.shift();
+        output.appendChild(el);
+        trimOutput();
+        if (printQueue.length > 0) {
+          drainTimer = setTimeout(drain, LINE_DELAY);
+        } else {
+          printing = false;
+          drainTimer = 0;
+        }
+      };
+      drain();
     };
 
     const appendCommand = (text) => {
@@ -117,6 +145,14 @@
     };
 
     const appendResponse = (text) => {
+      const line = document.createElement('p');
+      line.className = 'prompt-line prompt-line-response';
+      line.textContent = text;
+      printQueue.push(line);
+      flushQueue();
+    };
+
+    const appendResponseImmediate = (text) => {
       const line = document.createElement('p');
       line.className = 'prompt-line prompt-line-response';
       line.textContent = text;
@@ -138,8 +174,8 @@
       }
 
       line.appendChild(anchor);
-      output.appendChild(line);
-      trimOutput();
+      printQueue.push(line);
+      flushQueue();
     };
 
     const printHelp = () => {
@@ -164,6 +200,10 @@
 
       // Preserve terminal behavior: clear should wipe the screen entirely, including the typed line.
       if (cmd === 'clear') {
+        clearTimeout(drainTimer);
+        drainTimer = 0;
+        printQueue.length = 0;
+        printing = false;
         output.innerHTML = '';
         output.scrollTop = 0;
         const terminalContent = section.closest('.terminal-content') || section.parentElement;
@@ -371,7 +411,7 @@
     });
 
     // Print MOTD then auto-focus so the session starts feeling like a real shell (#21, #22, #49)
-    appendResponse("type 'help' for a list of commands.");
+    appendResponseImmediate("type 'help' for a list of commands.");
     requestAnimationFrame(() => input.focus());
   })();
 </script>
@@ -379,21 +419,25 @@
 <style>
   .prompt-shell {
     display: grid;
-    gap: 10px;
+    gap: 2px;
     margin-top: 4px;
   }
 
   .prompt-output {
-    display: grid;
-    gap: 6px;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
     max-height: min(48vh, 320px);
     overflow-y: auto;
     padding-right: 4px;
+    line-height: 1.3;
   }
 
   .prompt-line {
     margin: 0;
+    white-space: pre-wrap;
     word-break: break-word;
+    font-variant-ligatures: none;
   }
 
   .prompt-line-command {
@@ -401,7 +445,8 @@
   }
 
   .prompt-line-response {
-    color: var(--term-dim);
+    color: var(--term-fg);
+    text-shadow: 0 0 2px rgba(197, 200, 198, 0.15);
   }
 
   .prompt-entry {
@@ -410,7 +455,8 @@
     grid-template-columns: auto minmax(0, 1fr);
     gap: 8px;
     align-items: center;
-    min-height: 44px;
+    min-height: 1.3em;
+    padding: 2px 0;
   }
   
   .prompt-entry .cursor {
@@ -435,7 +481,8 @@
     color: var(--term-fg);
     background: transparent;
     font: inherit;
-    min-height: 44px;
+    line-height: 1.3;
+    min-height: 0;
     padding: 0;
     caret-color: transparent;
   }
@@ -458,15 +505,25 @@
   .prompt-link {
     color: var(--term-blue);
     text-decoration: none;
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
+    text-decoration-skip-ink: auto;
   }
 
   .prompt-link:hover,
   .prompt-link:focus-visible {
     color: var(--term-green);
     text-decoration: underline;
+  }
+
+  @media (pointer: coarse) {
+    .prompt-entry {
+      min-height: 44px;
+    }
+
+    .prompt-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
   }
 
   .sr-only {
