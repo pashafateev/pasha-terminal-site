@@ -2,6 +2,7 @@
 title: "Using OpenClaw to Build a Better OpenClaw"
 description: "Why I'm building a personal AI assistant from scratch."
 pubDate: 2026-02-20
+tags: ["ai", "projects", "mycel"]
 ---
 
 My first impression of OpenClaw was that of being completely blown away and obsessed with using it. I also noticed a lot of frustrations right out of the gate.

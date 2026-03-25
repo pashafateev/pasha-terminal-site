@@ -2,6 +2,7 @@
 title: "One in the Morning"
 description: "A first dictated note on AI, fear, and excitement."
 pubDate: 2026-02-16
+tags: ["ai", "thoughts"]
 ---
 
 It’s one in the morning, and just for context, I do not usually, or at least try not to, stay up after about 10:30. This is the second night
