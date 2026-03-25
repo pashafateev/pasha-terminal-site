@@ -25,12 +25,12 @@ body {
 
 html {
   background: var(--term-bg);
-  font-size: clamp(16px, 1vw + 12px, 20px);
+  font-size: clamp(14px, 0.95vw + 11px, 16px);
 }
 
 body {
   min-height: 100vh;
-  font-family: "VT323", "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 1rem;
   color: var(--term-fg);
   background:

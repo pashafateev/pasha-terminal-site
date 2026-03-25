@@ -95,9 +95,11 @@
       return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
     };
 
-    const LINE_DELAY = 18;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const LINE_DELAY = prefersReducedMotion ? 0 : 18;
     const printQueue = [];
     let printing = false;
+    let drainTimer = 0;
 
     const trimOutput = () => {
       while (output.childElementCount > MAX_OUTPUT_LINES) {
@@ -112,15 +114,17 @@
       const drain = () => {
         if (printQueue.length === 0) {
           printing = false;
+          drainTimer = 0;
           return;
         }
         const el = printQueue.shift();
         output.appendChild(el);
         trimOutput();
         if (printQueue.length > 0) {
-          setTimeout(drain, LINE_DELAY);
+          drainTimer = setTimeout(drain, LINE_DELAY);
         } else {
           printing = false;
+          drainTimer = 0;
         }
       };
       drain();
@@ -196,6 +200,8 @@
 
       // Preserve terminal behavior: clear should wipe the screen entirely, including the typed line.
       if (cmd === 'clear') {
+        clearTimeout(drainTimer);
+        drainTimer = 0;
         printQueue.length = 0;
         printing = false;
         output.innerHTML = '';
@@ -506,6 +512,18 @@
   .prompt-link:focus-visible {
     color: var(--term-green);
     text-decoration: underline;
+  }
+
+  @media (pointer: coarse) {
+    .prompt-entry {
+      min-height: 44px;
+    }
+
+    .prompt-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+    }
   }
 
   .sr-only {
