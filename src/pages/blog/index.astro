@@ -49,9 +49,9 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
             <a href={`/blog/${post.slug}`}>{post.data.title}</a>
           </div>
           {post.data.tags && post.data.tags.length > 0 && (
-            <div class="post-tags" aria-label="Tags">
+            <div class="post-tags" role="group" aria-label="Tags">
               {post.data.tags.map((tag) => (
-                <button class="tag-chip" data-tag={tag} type="button">#{tag}</button>
+                <button class="tag-chip" data-tag={tag} type="button" aria-pressed="false">#{tag}</button>
               ))}
             </div>
           )}
