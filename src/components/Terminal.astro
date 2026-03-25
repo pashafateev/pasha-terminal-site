@@ -65,11 +65,17 @@ const { path = '~', status = 'READY' } = Astro.props;
     inset: 0;
     pointer-events: none;
     z-index: 2;
-    background: radial-gradient(
-      ellipse at center,
-      transparent 55%,
-      rgba(0, 0, 0, 0.38) 100%
-    );
+    background:
+      radial-gradient(
+        ellipse at center,
+        rgba(57, 255, 20, 0.05) 0%,
+        transparent 42%
+      ),
+      radial-gradient(
+        ellipse 90% 80% at center,
+        transparent 28%,
+        rgba(0, 0, 0, 0.72) 100%
+      );
   }
 
   .terminal-titlebar,
