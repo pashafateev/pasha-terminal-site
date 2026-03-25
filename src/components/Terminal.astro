@@ -14,8 +14,10 @@ const { path = '~', status = 'READY' } = Astro.props;
       <span class="dot dot-yellow"></span>
       <span class="dot dot-green"></span>
     </div>
-    <p class="terminal-title">pasha@portfolio:{path}</p>
-    <img src="/images/profile.webp" alt="Pasha Fateev" class="terminal-avatar" />
+    <div class="terminal-titlebar-right">
+      <p class="terminal-title">pasha@portfolio:{path}</p>
+      <img src="/images/profile.webp" alt="Pasha Fateev" class="terminal-avatar" width="80" height="80" />
+    </div>
   </header>
 
   <div class="terminal-content" transition:name="terminal-content">
@@ -72,6 +74,8 @@ const { path = '~', status = 'READY' } = Astro.props;
 
   .terminal-titlebar,
   .terminal-statusbar {
+    position: relative;
+    z-index: 3;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -94,6 +98,12 @@ const { path = '~', status = 'READY' } = Astro.props;
   .status-left,
   .status-right {
     margin: 0;
+  }
+
+  .terminal-titlebar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
   }
 
   .terminal-avatar {
