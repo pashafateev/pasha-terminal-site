@@ -18,7 +18,7 @@
     <span class="cursor" aria-hidden="true"></span>
   </div>
 
-  <p id="prompt-hint" class="prompt-hint">Type <code>help</code> for commands · try <code>projects</code> · <code>/</code> focuses prompt</p>
+  <p id="prompt-hint" class="prompt-hint">Type <code>help</code> for commands · <code>Tab</code> completes</p>
 
   <noscript>
     <p class="prompt-hint">JavaScript is off. Visit <a href="/blog">/blog</a> or open <a href="/files/resume-cv.pdf">resume.pdf</a>.</p>
@@ -39,6 +39,8 @@
     const MAX_OUTPUT_LINES = 180;
     const commandHistory = [];
     let historyIndex = 0;
+
+    const ALL_COMMANDS = ['about', 'blog', 'clear', 'cowsay', 'help', 'links', 'matrix', 'neofetch', 'projects', 'resume', 'sudo'];
 
     const cursor = section?.querySelector('.cursor');
     const promptEntry = section?.querySelector('.prompt-entry');
@@ -150,7 +152,10 @@
       appendResponse('blog     - open /blog');
       appendResponse('resume   - open resume.pdf');
       appendResponse('clear    - clear terminal output');
+      appendResponse('cowsay   - make a cow say something');
       appendResponse('help     - show this help');
+      appendResponse('──────────────────────────────────────');
+      appendResponse('Shortcuts: Tab complete  ? help');
     };
 
     const runCommand = (rawValue) => {
@@ -158,9 +163,10 @@
       if (!value) return;
 
       const command = value.toLowerCase();
+      const [cmd, ...args] = command.split(/\s+/);
 
       // Preserve terminal behavior: clear should wipe the screen entirely, including the typed line.
-      if (command === 'clear') {
+      if (cmd === 'clear') {
         output.innerHTML = '';
         output.scrollTop = 0;
         const terminalContent = section.closest('.terminal-content') || section.parentElement;
@@ -176,7 +182,7 @@
 
       appendCommand(value);
 
-      switch (command) {
+      switch (cmd) {
         case 'about':
           appendResponse('Pasha Fateev - software engineer focused on reliable backend systems with Python and Go.');
           appendResponse('Currently building release engineering automation and practical AI-assisted workflows.');
@@ -212,8 +218,65 @@
         case 'help':
           printHelp();
           break;
+        case 'matrix': {
+          const chars = 'ﾊﾐﾋｰｳｼﾅﾓﾆｻﾜﾂｵﾘｱﾎﾃﾏｹﾒｴｶｷﾑﾕﾗｾﾈｽﾀﾇﾍ01';
+          const rand = () => chars[Math.floor(Math.random() * chars.length)];
+          let count = 0;
+          const id = setInterval(() => {
+            appendResponse(Array.from({ length: 48 }, rand).join(''));
+            count++;
+            if (count >= 10) {
+              clearInterval(id);
+              appendResponse('');
+              appendResponse('wake up, Neo...');
+              appendResponse('');
+              appendResponse("follow the white rabbit. try 'sudo'");
+            }
+          }, 80);
+          break;
+        }
+        case 'sudo':
+          appendResponse('[sudo] password for pasha: ');
+          appendResponse('Sorry, try again.');
+          appendResponse('[sudo] password for pasha: ');
+          appendResponse('Sorry, try again.');
+          appendResponse('[sudo] password for pasha: ');
+          appendResponse('sudo: 3 incorrect password attempts');
+          appendResponse('');
+          appendResponse("what system are you even on? try 'neofetch'");
+          break;
+        case 'neofetch': {
+          const platform = navigator.userAgentData?.platform ?? navigator.platform ?? 'Web';
+          appendResponse('pasha@portfolio');
+          appendResponse('───────────────────────────────');
+          appendResponse('OS:        ' + platform);
+          appendResponse('Host:      pashafateev.dev');
+          appendResponse('Shell:     /bin/terminal.sh');
+          appendResponse('Framework: Astro 4.x');
+          appendResponse('Font:      JetBrains Mono 400');
+          appendResponse('Theme:     JetBrains Dark');
+          appendResponse('Colors:    \u2588 \u2588 \u2588 \u2588 \u2588 \u2588 \u2588 \u2588');
+          break;
+        }
+        case 'cowsay': {
+          const msg = args.join(' ') || 'Moo!';
+          const pad = msg.length + 2;
+          appendResponse(' ' + '_'.repeat(pad));
+          appendResponse('< ' + msg + ' >');
+          appendResponse(' ' + '-'.repeat(pad));
+          appendResponse('        \\   ^__^');
+          appendResponse('         \\  (oo)\\_______');
+          appendResponse('            (__)\\       )\\/\\');
+          appendResponse('                ||----w |');
+          appendResponse('                ||     ||');
+          if (args.length === 0) {
+            appendResponse('');
+            appendResponse("the cow looks nervous... as if something is watching. try 'matrix'");
+          }
+          break;
+        }
         default:
-          appendResponse(`Command not found: ${command}. Type "help" for available commands.`);
+          appendResponse(`Command not found: ${cmd}. Type "help" for available commands.`);
       }
     };
 
@@ -272,6 +335,22 @@
         historyIndex = Math.min(commandHistory.length, historyIndex + 1);
         input.value = historyIndex === commandHistory.length ? '' : commandHistory[historyIndex] ?? '';
         setTimeout(updateCursorPosition, 0);
+        return;
+      }
+
+      if (event.key === 'Tab') {
+        event.preventDefault();
+        const partial = input.value.toLowerCase().trimStart();
+        // Only complete the command token (no spaces yet)
+        if (!partial || partial.includes(' ')) return;
+        const matches = ALL_COMMANDS.filter(c => c.startsWith(partial));
+        if (matches.length === 1) {
+          input.value = matches[0];
+          setTimeout(updateCursorPosition, 0);
+        } else if (matches.length > 1) {
+          appendCommand(partial);
+          appendResponse(matches.join('    '));
+        }
       }
     });
 
@@ -282,9 +361,10 @@
 
       const target = event.target;
 
-      if (event.key === '/' && !isEditableTarget(target)) {
+      if (event.key === '?' && !isEditableTarget(target)) {
         event.preventDefault();
         input.focus();
+        printHelp();
         return;
       }
 
@@ -292,6 +372,9 @@
         input.blur();
       }
     });
+
+    // Auto-focus on page load so the terminal is ready to type immediately (#47)
+    requestAnimationFrame(() => input.focus());
   })();
 </script>
 
