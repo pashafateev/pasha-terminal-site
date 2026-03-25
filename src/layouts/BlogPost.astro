@@ -13,7 +13,7 @@ const { frontmatter } = Astro.props;
   <header class="post-meta">
     <p><span class="prompt">pasha@portfolio:~/blog$</span> cat {frontmatter.title.toLowerCase().replaceAll(' ', '-')}.md</p>
     <h1>{frontmatter.title}</h1>
-    <p class="meta-line">
+    <div class="meta-line">
       <time datetime={frontmatter.pubDate.toISOString()}>
         {frontmatter.pubDate.toLocaleDateString('en-US', {
           year: 'numeric',
@@ -22,9 +22,13 @@ const { frontmatter } = Astro.props;
         })}
       </time>
       {frontmatter.tags && frontmatter.tags.length > 0 && (
-        <span> | {frontmatter.tags.join(', ')}</span>
+        <div class="post-tags" role="group" aria-label="Tags">
+          {frontmatter.tags.map((tag: string) => (
+            <a href={`/blog?tag=${encodeURIComponent(tag)}`} class="tag-chip">#{tag}</a>
+          ))}
+        </div>
       )}
-    </p>
+    </div>
     <p class="back"><a href="/blog">cd .. (back to blog)</a></p>
   </header>
   <div class="prose prose-invert prose-pre:bg-transparent max-w-none">
@@ -50,6 +54,35 @@ const { frontmatter } = Astro.props;
   .meta-line {
     color: var(--term-dim);
     margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .tag-chip {
+    background: transparent;
+    border: 1px solid rgba(97, 175, 239, 0.3);
+    border-radius: 4px;
+    color: var(--term-dim);
+    font: inherit;
+    font-size: 0.78rem;
+    line-height: 1;
+    padding: 3px 7px;
+    text-decoration: none;
+    transition: border-color 120ms, color 120ms;
+  }
+
+  .tag-chip:hover,
+  .tag-chip:focus-visible {
+    border-color: var(--term-blue);
+    color: var(--term-blue);
   }
 
   .back {
