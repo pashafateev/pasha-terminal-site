@@ -88,13 +88,6 @@
       cursor.style.height = `${cursorHeight}px`;
     };
 
-    const isEditableTarget = (target) => {
-      if (!(target instanceof HTMLElement)) return false;
-      if (target.isContentEditable) return true;
-      const tag = target.tagName;
-      return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
-    };
-
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const LINE_DELAY = prefersReducedMotion ? 0 : 18;
     const printQueue = [];
@@ -395,8 +388,6 @@
       if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) {
         return;
       }
-
-      const target = event.target;
 
       if (event.key === 'Escape' && document.activeElement === input) {
         input.blur();
