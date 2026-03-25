@@ -188,7 +188,7 @@
       appendResponse('cowsay   - make a cow say something');
       appendResponse('help     - show this help');
       appendResponse('──────────────────────────────────────');
-      appendResponse('Shortcuts: Tab complete  ? help');
+      appendResponse('Shortcuts: Tab complete');
     };
 
     const runCommand = (rawValue) => {
@@ -397,13 +397,6 @@
       }
 
       const target = event.target;
-
-      if (event.key === '?' && !isEditableTarget(target)) {
-        event.preventDefault();
-        input.focus();
-        printHelp();
-        return;
-      }
 
       if (event.key === 'Escape' && document.activeElement === input) {
         input.blur();
