@@ -13,19 +13,7 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
   <div class="output">
     <p><span class="prompt">pasha@portfolio:~/blog$</span> ls -la</p>
 
-    <!-- search & tag filters -->
     <div class="controls" id="blog-controls">
-      <div class="search-row">
-        <label for="blog-search" class="sr-only">Search posts</label>
-        <input
-          id="blog-search"
-          class="search-input"
-          type="search"
-          placeholder="grep -r ..."
-          autocomplete="off"
-          spellcheck="false"
-        />
-      </div>
       {allTags.length > 0 && (
         <div class="tag-bar" id="tag-bar" role="group" aria-label="Filter by tag">
           {allTags.map((tag) => (
@@ -37,7 +25,7 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
 
     <ul class="post-list" id="post-list">
       {sortedPosts.map((post) => (
-        <li data-title={post.data.title.toLowerCase()} data-desc={post.data.description.toLowerCase()} data-tags={(post.data.tags ?? []).join(',')}>
+        <li data-tags={(post.data.tags ?? []).join(',')}>
           <div class="post-row">
             <time datetime={post.data.pubDate.toISOString()}>
               {post.data.pubDate.toLocaleDateString('en-US', {
@@ -59,7 +47,7 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
       ))}
     </ul>
 
-    <p class="no-results" id="no-results" hidden>No posts match your search.</p>
+    <p class="no-results" id="no-results" hidden>No posts match this filter.</p>
 
     <p><span class="prompt">pasha@portfolio:~/blog$</span> cd ..</p>
     <p><a href="/">back to home</a></p>
@@ -68,29 +56,24 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
 
 <script is:inline>
   (() => {
-    const searchInput = document.getElementById('blog-search');
     const postList = document.getElementById('post-list');
     const noResults = document.getElementById('no-results');
     const tagBar = document.getElementById('tag-bar');
 
-    if (!searchInput || !postList) return;
+    if (!postList) return;
 
     const items = Array.from(postList.querySelectorAll('li'));
     let activeTag = null;
 
     const applyFilters = () => {
-      const query = searchInput.value.trim().toLowerCase();
       let visibleCount = 0;
 
       items.forEach((li) => {
-        const title = li.dataset.title || '';
-        const desc = li.dataset.desc || '';
         const tags = li.dataset.tags ? li.dataset.tags.split(',') : [];
 
-        const matchesSearch = !query || title.includes(query) || desc.includes(query);
         const matchesTag = !activeTag || tags.includes(activeTag);
 
-        const visible = matchesSearch && matchesTag;
+        const visible = matchesTag;
         li.hidden = !visible;
         if (visible) visibleCount++;
       });
@@ -108,8 +91,6 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
       });
       applyFilters();
     };
-
-    searchInput.addEventListener('input', applyFilters);
 
     // Pre-select tag from URL (?tag=foo)
     const urlTag = new URLSearchParams(window.location.search).get('tag');
@@ -149,36 +130,10 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
     color: var(--term-green);
   }
 
-  /* ── search & tag bar ── */
+  /* ── tag bar ── */
   .controls {
     display: grid;
     gap: 8px;
-  }
-
-  .search-input {
-    width: 100%;
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid rgba(97, 175, 239, 0.25);
-    color: var(--term-fg);
-    font: inherit;
-    padding: 4px 0;
-    caret-color: var(--term-green);
-  }
-
-  .search-input::placeholder {
-    color: var(--term-dim);
-    opacity: 0.65;
-  }
-
-  .search-input:focus {
-    outline: none;
-    border-bottom-color: rgba(97, 175, 239, 0.6);
-  }
-
-  /* Remove browser search clear button */
-  .search-input::-webkit-search-cancel-button {
-    display: none;
   }
 
   .tag-bar {
@@ -244,18 +199,6 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
     display: flex;
     flex-wrap: wrap;
     gap: 5px;
-  }
-
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
   }
 
   .no-results {
