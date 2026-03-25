@@ -7,20 +7,6 @@ const sortedPosts = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDa
 
 // Collect all unique tags across posts for the filter bar
 const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort();
-
-// Serialise post data for client-side search/filter
-const postData = sortedPosts.map((post) => ({
-  slug: post.slug,
-  title: post.data.title,
-  description: post.data.description,
-  tags: post.data.tags ?? [],
-  date: post.data.pubDate.toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: '2-digit',
-  }),
-  dateIso: post.data.pubDate.toISOString(),
-}));
 ---
 
 <BaseLayout title="Blog | Pasha Fateev" path="~/blog" status={`POSTS ${sortedPosts.length}`}>
@@ -41,15 +27,15 @@ const postData = sortedPosts.map((post) => ({
         />
       </div>
       {allTags.length > 0 && (
-        <div class="tag-bar" id="tag-bar" aria-label="Filter by tag">
+        <div class="tag-bar" id="tag-bar" role="group" aria-label="Filter by tag">
           {allTags.map((tag) => (
-            <button class="tag-btn" data-tag={tag} type="button">#{tag}</button>
+            <button class="tag-btn" data-tag={tag} type="button" aria-pressed="false">#{tag}</button>
           ))}
         </div>
       )}
     </div>
 
-    <ul class="post-list" id="post-list" data-posts={JSON.stringify(postData)}>
+    <ul class="post-list" id="post-list">
       {sortedPosts.map((post) => (
         <li data-title={post.data.title.toLowerCase()} data-desc={post.data.description.toLowerCase()} data-tags={(post.data.tags ?? []).join(',')}>
           <div class="post-row">
@@ -114,9 +100,11 @@ const postData = sortedPosts.map((post) => ({
 
     const setActiveTag = (tag) => {
       activeTag = tag;
-      // Update button styles
+      // Update button styles and ARIA pressed state
       document.querySelectorAll('.tag-btn, .tag-chip').forEach((btn) => {
-        btn.classList.toggle('active', btn.dataset.tag === activeTag);
+        const isActive = btn.dataset.tag === activeTag;
+        btn.classList.toggle('active', isActive);
+        btn.setAttribute('aria-pressed', String(isActive));
       });
       applyFilters();
     };

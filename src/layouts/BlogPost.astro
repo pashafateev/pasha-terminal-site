@@ -22,7 +22,7 @@ const { frontmatter } = Astro.props;
         })}
       </time>
       {frontmatter.tags && frontmatter.tags.length > 0 && (
-        <div class="post-tags" aria-label="Tags">
+        <div class="post-tags" role="group" aria-label="Tags">
           {frontmatter.tags.map((tag: string) => (
             <a href={`/blog?tag=${encodeURIComponent(tag)}`} class="tag-chip">#{tag}</a>
           ))}
