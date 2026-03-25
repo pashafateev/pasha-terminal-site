@@ -49,6 +49,12 @@ a:hover {
   color: var(--term-green);
 }
 
+/* Prompt label: green with subtle CRT glow (#37) */
+.prompt {
+  color: var(--term-green);
+  text-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
+}
+
 .terminal-page {
   width: 100%;
   max-width: 960px;

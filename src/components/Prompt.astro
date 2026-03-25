@@ -12,13 +12,10 @@
       inputmode="text"
       autocomplete="off"
       spellcheck="false"
-      aria-describedby="prompt-hint"
       placeholder=""
     >
     <span class="cursor" aria-hidden="true"></span>
   </div>
-
-  <p id="prompt-hint" class="prompt-hint">Type <code>help</code> for commands · <code>Tab</code> completes</p>
 
   <noscript>
     <p class="prompt-hint">JavaScript is off. Visit <a href="/blog">/blog</a> or open <a href="/files/resume-cv.pdf">resume.pdf</a>.</p>
@@ -373,7 +370,8 @@
       }
     });
 
-    // Auto-focus on page load so the terminal is ready to type immediately (#47)
+    // Print MOTD then auto-focus so the session starts feeling like a real shell (#21, #22, #49)
+    appendResponse("type 'help' for a list of commands.");
     requestAnimationFrame(() => input.focus());
   })();
 </script>
@@ -455,11 +453,6 @@
     margin: 0;
     color: var(--term-dim);
     font-size: 0.9rem;
-  }
-
-  .prompt-hint code {
-    color: var(--term-green);
-    background: transparent;
   }
 
   .prompt-link {

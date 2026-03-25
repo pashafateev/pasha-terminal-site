@@ -15,6 +15,7 @@ const { path = '~', status = 'READY' } = Astro.props;
       <span class="dot dot-green"></span>
     </div>
     <p class="terminal-title">pasha@portfolio:{path}</p>
+    <img src="/images/profile.webp" alt="Pasha Fateev" class="terminal-avatar" />
   </header>
 
   <div class="terminal-content" transition:name="terminal-content">
@@ -56,6 +57,19 @@ const { path = '~', status = 'READY' } = Astro.props;
     opacity: 0.22;
   }
 
+  .terminal-shell::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 2;
+    background: radial-gradient(
+      ellipse at center,
+      transparent 55%,
+      rgba(0, 0, 0, 0.38) 100%
+    );
+  }
+
   .terminal-titlebar,
   .terminal-statusbar {
     display: flex;
@@ -80,6 +94,16 @@ const { path = '~', status = 'READY' } = Astro.props;
   .status-left,
   .status-right {
     margin: 0;
+  }
+
+  .terminal-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid rgba(97, 175, 239, 0.4);
+    flex-shrink: 0;
+    opacity: 0.85;
   }
 
   .terminal-dots {
