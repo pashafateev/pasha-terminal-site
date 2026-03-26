@@ -1,6 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-const { frontmatter } = Astro.props;
+const { frontmatter, newerSlug = null, olderSlug = null } = Astro.props;
 ---
 
 <BaseLayout
@@ -29,7 +29,11 @@ const { frontmatter } = Astro.props;
         </div>
       )}
     </div>
-    <p class="back"><a href="/blog">cd .. (back to blog)</a></p>
+    <div class="back">
+      <a href="/blog">cd .. (back to blog)</a>
+      {newerSlug && <a href={`/blog/${newerSlug}`} id="post-newer" class="post-adj-link">← newer</a>}
+      {olderSlug && <a href={`/blog/${olderSlug}`} id="post-older" class="post-adj-link">older →</a>}
+    </div>
   </header>
   <div class="prose prose-invert prose-pre:bg-transparent max-w-none">
     <slot />
@@ -86,7 +90,22 @@ const { frontmatter } = Astro.props;
   }
 
   .back {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
     margin-bottom: 16px;
+  }
+
+  .post-adj-link {
+    color: var(--term-dim);
+    text-decoration: none;
+    font-size: 0.875rem;
+  }
+
+  .post-adj-link:hover,
+  .post-adj-link:focus-visible {
+    color: var(--term-blue);
   }
 
   :global(.prose :not(pre) > code) {
@@ -102,3 +121,32 @@ const { frontmatter } = Astro.props;
     content: none;
   }
 </style>
+
+<script is:inline>
+  (() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const scrollBehavior = prefersReducedMotion ? 'auto' : 'smooth';
+    const SCROLL_STEP = 120;
+
+    document.addEventListener('keydown', (e) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      // Block only when focus is in a typing context.
+      const activeEl = document.activeElement;
+      if (
+        activeEl instanceof HTMLInputElement
+        || activeEl instanceof HTMLTextAreaElement
+        || (activeEl instanceof HTMLElement && activeEl.isContentEditable)
+      ) return;
+
+      if (e.key === 'q') {
+        window.location.assign('/blog');
+      } else if (e.key === 'j') {
+        e.preventDefault();
+        window.scrollBy({ top: SCROLL_STEP, behavior: scrollBehavior });
+      } else if (e.key === 'k') {
+        e.preventDefault();
+        window.scrollBy({ top: -SCROLL_STEP, behavior: scrollBehavior });
+      }
+    });
+  })();
+</script>
