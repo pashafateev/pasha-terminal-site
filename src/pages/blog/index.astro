@@ -272,6 +272,12 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
     color: var(--term-green);
   }
 
+  /* The li.selected outline is the visual cursor — suppress the redundant browser focus ring on the inner link. */
+  .post-list li.selected a:focus,
+  .post-list li.selected a:focus-visible {
+    outline: none;
+  }
+
   /* ── keyboard shortcut hint (hidden on touch) ── */
   .keyboard-hint {
     color: var(--term-dim);
