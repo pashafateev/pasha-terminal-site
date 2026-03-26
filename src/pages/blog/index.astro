@@ -300,5 +300,11 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
       padding: 10px 12px;
       font-size: 0.85rem;
     }
+
+    .post-row a {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
   }
 </style>
