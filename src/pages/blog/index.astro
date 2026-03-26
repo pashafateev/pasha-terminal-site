@@ -70,12 +70,26 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
 
     const getVisible = () => Array.from(postList.querySelectorAll('li:not([hidden])'));
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
     const selectItem = (item) => {
-      if (selectedItem) selectedItem.classList.remove('selected');
+      if (selectedItem) {
+        selectedItem.classList.remove('selected');
+        const prevLink = selectedItem.querySelector('a[href]');
+        if (prevLink) {
+          prevLink.removeAttribute('aria-current');
+          if (document.activeElement === prevLink) prevLink.blur();
+        }
+      }
       selectedItem = item ?? null;
       if (selectedItem) {
         selectedItem.classList.add('selected');
-        selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        const link = selectedItem.querySelector('a[href]');
+        if (link) {
+          link.setAttribute('aria-current', 'true');
+          link.focus({ preventScroll: true });
+        }
+        selectedItem.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion ? 'auto' : 'smooth' });
       }
     };
 
@@ -127,9 +141,14 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
     document.addEventListener('keydown', (e) => {
       if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
 
-      const inInput = document.activeElement instanceof HTMLInputElement
-        || document.activeElement instanceof HTMLTextAreaElement;
-      if (inInput) return;
+      const activeEl = document.activeElement;
+      // Block j/k/Enter/q when focus is on inputs or buttons (e.g. tag chips).
+      // Focused anchor links are allowed — we move focus there on selection.
+      if (
+        activeEl instanceof HTMLInputElement
+        || activeEl instanceof HTMLTextAreaElement
+        || activeEl instanceof HTMLButtonElement
+      ) return;
 
       const visible = getVisible();
 
@@ -145,6 +164,9 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
         selectItem(visible[Math.max(0, idx - 1)]);
       } else if (e.key === 'Enter' && selectedItem) {
         const link = selectedItem.querySelector('a');
+        // If focus is already on the selected link, let the browser follow it naturally.
+        if (activeEl === link) return;
+        e.preventDefault();
         if (link) window.location.assign(link.href);
       } else if (e.key === 'q') {
         window.location.assign('/');

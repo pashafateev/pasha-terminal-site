@@ -139,9 +139,15 @@ const { frontmatter, newerSlug = null, olderSlug = null } = Astro.props;
   (() => {
     document.addEventListener('keydown', (e) => {
       if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
-      const inInput = document.activeElement instanceof HTMLInputElement
-        || document.activeElement instanceof HTMLTextAreaElement;
-      if (inInput) return;
+      const activeEl = document.activeElement;
+      // Block when focus is on any interactive element (input, button, link)
+      // so shortcuts don't fire while a user is activating a control.
+      if (
+        activeEl instanceof HTMLInputElement
+        || activeEl instanceof HTMLTextAreaElement
+        || activeEl instanceof HTMLButtonElement
+        || activeEl instanceof HTMLAnchorElement
+      ) return;
 
       if (e.key === 'q') {
         window.location.assign('/blog');
