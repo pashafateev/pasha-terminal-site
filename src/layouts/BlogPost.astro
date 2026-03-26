@@ -108,6 +108,22 @@ const { frontmatter, newerSlug = null, olderSlug = null } = Astro.props;
     color: var(--term-blue);
   }
 
+  @media (pointer: coarse) {
+    .tag-chip {
+      min-height: 44px;
+      padding: 10px 12px;
+      display: inline-flex;
+      align-items: center;
+    }
+
+    .back a,
+    .post-adj-link {
+      min-height: 44px;
+      display: inline-flex;
+      align-items: center;
+    }
+  }
+
   :global(.prose :not(pre) > code) {
     color: var(--term-green);
     background: rgba(97, 175, 239, 0.12);

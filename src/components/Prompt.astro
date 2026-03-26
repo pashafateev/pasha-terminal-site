@@ -17,6 +17,8 @@
     <span class="cursor" aria-hidden="true"></span>
   </div>
 
+  <p class="prompt-tap-hint" aria-hidden="true">tap to type</p>
+
   <noscript>
     <p class="prompt-hint">JavaScript is off. Visit <a href="/blog">/blog</a> or open <a href="/files/resume-cv.pdf">resume.pdf</a>.</p>
   </noscript>
@@ -330,9 +332,11 @@
     input.addEventListener('click', updateCursorPosition);
     input.addEventListener('keyup', updateCursorPosition);
     
-    // Show/hide cursor based on focus
+    // Show/hide cursor based on focus; hide tap hint on first interaction
+    const tapHint = section?.querySelector('.prompt-tap-hint');
     input.addEventListener('focus', () => {
       if (cursor) cursor.style.opacity = '1';
+      if (tapHint) tapHint.hidden = true;
       updateCursorPosition();
     });
     
@@ -403,9 +407,12 @@
       }
     });
 
-    // Print MOTD then auto-focus so the session starts feeling like a real shell (#21, #22, #49)
+    // Print MOTD. Only auto-focus on pointer devices — on touch, focusing the input
+    // immediately pops the software keyboard before the visitor has read anything.
     appendResponseImmediate("type 'help' for a list of commands.");
-    requestAnimationFrame(() => input.focus());
+    if (!window.matchMedia('(pointer: coarse)').matches) {
+      requestAnimationFrame(() => input.focus());
+    }
   })();
 </script>
 
@@ -493,6 +500,20 @@
     margin: 0;
     color: var(--term-dim);
     font-size: 0.9rem;
+  }
+
+  .prompt-tap-hint {
+    display: none;
+    margin: 6px 0 0;
+    color: var(--term-dim);
+    font-size: 0.8rem;
+    opacity: 0.55;
+  }
+
+  @media (pointer: coarse) {
+    .prompt-tap-hint {
+      display: block;
+    }
   }
 
   .prompt-link {
