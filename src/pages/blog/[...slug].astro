@@ -4,13 +4,20 @@ import BlogPost from '../../layouts/BlogPost.astro';
 
 export async function getStaticPaths() {
   const posts = await getCollection('blog');
-  return posts.map((post) => ({
+  const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+  return sorted.map((post, i) => ({
     params: { slug: post.slug },
-    props: { slug: post.slug },
+    props: {
+      slug: post.slug,
+      // sorted newest-first: index i-1 = newer (k), index i+1 = older (j)
+      newerSlug: sorted[i - 1]?.slug ?? null,
+      olderSlug: sorted[i + 1]?.slug ?? null,
+    },
   }));
 }
 
-const { slug } = Astro.props;
+const { slug, newerSlug, olderSlug } = Astro.props;
 const post = await getEntryBySlug('blog', slug);
 
 if (!post) {
@@ -20,6 +27,6 @@ if (!post) {
 const { Content } = await post.render();
 ---
 
-<BlogPost frontmatter={post.data}>
+<BlogPost frontmatter={post.data} newerSlug={newerSlug} olderSlug={olderSlug}>
   <Content />
 </BlogPost>

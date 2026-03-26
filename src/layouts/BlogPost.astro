@@ -1,6 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
-const { frontmatter } = Astro.props;
+const { frontmatter, newerSlug = null, olderSlug = null } = Astro.props;
 ---
 
 <BaseLayout
@@ -29,7 +29,11 @@ const { frontmatter } = Astro.props;
         </div>
       )}
     </div>
-    <p class="back"><a href="/blog">cd .. (back to blog)</a></p>
+    <div class="back">
+      <a href="/blog">cd .. (back to blog)</a>
+      {newerSlug && <a href={`/blog/${newerSlug}`} id="post-newer" class="post-adj-link"><span class="adj-key">k</span> newer</a>}
+      {olderSlug && <a href={`/blog/${olderSlug}`} id="post-older" class="post-adj-link"><span class="adj-key">j</span> older</a>}
+    </div>
   </header>
   <div class="prose prose-invert prose-pre:bg-transparent max-w-none">
     <slot />
@@ -86,7 +90,35 @@ const { frontmatter } = Astro.props;
   }
 
   .back {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
     margin-bottom: 16px;
+  }
+
+  .post-adj-link {
+    color: var(--term-dim);
+    text-decoration: none;
+    font-size: 0.875rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+  }
+
+  .post-adj-link:hover,
+  .post-adj-link:focus-visible {
+    color: var(--term-blue);
+  }
+
+  .adj-key {
+    display: inline-block;
+    color: var(--term-green);
+    border: 1px solid rgba(57, 255, 20, 0.4);
+    border-radius: 3px;
+    padding: 0 4px;
+    font-size: 0.8em;
+    line-height: 1.5;
   }
 
   :global(.prose :not(pre) > code) {
@@ -110,7 +142,16 @@ const { frontmatter } = Astro.props;
       const inInput = document.activeElement instanceof HTMLInputElement
         || document.activeElement instanceof HTMLTextAreaElement;
       if (inInput) return;
-      if (e.key === 'q') window.location.assign('/blog');
+
+      if (e.key === 'q') {
+        window.location.assign('/blog');
+      } else if (e.key === 'j') {
+        const link = document.getElementById('post-older');
+        if (link) window.location.assign(link.href);
+      } else if (e.key === 'k') {
+        const link = document.getElementById('post-newer');
+        if (link) window.location.assign(link.href);
+      }
     });
   })();
 </script>
