@@ -181,7 +181,7 @@
       appendResponse('cowsay   - make a cow say something');
       appendResponse('help     - show this help');
       appendResponse('──────────────────────────────────────');
-      appendResponse('Shortcuts: Tab complete');
+      appendResponse('Shortcuts: Tab complete  /  focus  Esc  blur');
     };
 
     const runCommand = (rawValue) => {
@@ -389,8 +389,17 @@
         return;
       }
 
+      const inInput = document.activeElement instanceof HTMLInputElement
+        || document.activeElement instanceof HTMLTextAreaElement;
+
       if (event.key === 'Escape' && document.activeElement === input) {
         input.blur();
+        return;
+      }
+
+      if (event.key === '/' && !inInput) {
+        event.preventDefault();
+        input.focus();
       }
     });
 

@@ -102,3 +102,15 @@ const { frontmatter } = Astro.props;
     content: none;
   }
 </style>
+
+<script is:inline>
+  (() => {
+    document.addEventListener('keydown', (e) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+      const inInput = document.activeElement instanceof HTMLInputElement
+        || document.activeElement instanceof HTMLTextAreaElement;
+      if (inInput) return;
+      if (e.key === 'q') window.location.assign('/blog');
+    });
+  })();
+</script>

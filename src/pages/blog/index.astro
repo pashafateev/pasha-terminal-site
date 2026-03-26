@@ -49,6 +49,8 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
 
     <p class="no-results" id="no-results" hidden>No posts match this filter.</p>
 
+    <p class="keyboard-hint" aria-hidden="true">j / k&nbsp; navigate &nbsp;&middot;&nbsp; ↵&nbsp; open &nbsp;&middot;&nbsp; q&nbsp; back</p>
+
     <p><span class="prompt">pasha@portfolio:~/blog$</span> cd ..</p>
     <p><a href="/">back to home</a></p>
   </div>
@@ -64,26 +66,33 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
 
     const items = Array.from(postList.querySelectorAll('li'));
     let activeTag = null;
+    let selectedItem = null;
+
+    const getVisible = () => Array.from(postList.querySelectorAll('li:not([hidden])'));
+
+    const selectItem = (item) => {
+      if (selectedItem) selectedItem.classList.remove('selected');
+      selectedItem = item ?? null;
+      if (selectedItem) {
+        selectedItem.classList.add('selected');
+        selectedItem.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+      }
+    };
 
     const applyFilters = () => {
       let visibleCount = 0;
-
       items.forEach((li) => {
         const tags = li.dataset.tags ? li.dataset.tags.split(',') : [];
-
-        const matchesTag = !activeTag || tags.includes(activeTag);
-
-        const visible = matchesTag;
+        const visible = !activeTag || tags.includes(activeTag);
         li.hidden = !visible;
         if (visible) visibleCount++;
       });
-
       if (noResults) noResults.hidden = visibleCount > 0;
+      selectItem(null);
     };
 
     const setActiveTag = (tag) => {
       activeTag = tag;
-      // Update button styles and ARIA pressed state
       document.querySelectorAll('.tag-btn, .tag-chip').forEach((btn) => {
         const isActive = btn.dataset.tag === activeTag;
         btn.classList.toggle('active', isActive);
@@ -112,6 +121,34 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
       if (!btn) return;
       const tag = btn.dataset.tag;
       setActiveTag(activeTag === tag ? null : tag);
+    });
+
+    // ── keyboard navigation ──
+    document.addEventListener('keydown', (e) => {
+      if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey) return;
+
+      const inInput = document.activeElement instanceof HTMLInputElement
+        || document.activeElement instanceof HTMLTextAreaElement;
+      if (inInput) return;
+
+      const visible = getVisible();
+
+      if (e.key === 'j' || e.key === 'ArrowDown') {
+        if (visible.length === 0) return;
+        e.preventDefault();
+        const idx = selectedItem ? visible.indexOf(selectedItem) : -1;
+        selectItem(visible[Math.min(visible.length - 1, idx + 1)]);
+      } else if (e.key === 'k' || e.key === 'ArrowUp') {
+        if (visible.length === 0) return;
+        e.preventDefault();
+        const idx = selectedItem ? visible.indexOf(selectedItem) : visible.length;
+        selectItem(visible[Math.max(0, idx - 1)]);
+      } else if (e.key === 'Enter' && selectedItem) {
+        const link = selectedItem.querySelector('a');
+        if (link) window.location.assign(link.href);
+      } else if (e.key === 'q') {
+        window.location.assign('/');
+      }
     });
   })();
 </script>
@@ -204,5 +241,42 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
   .no-results {
     color: var(--term-dim);
     margin: 0;
+  }
+
+  /* ── keyboard navigation selection ── */
+  .post-list li.selected {
+    background: rgba(97, 175, 239, 0.07);
+    outline: 1px solid rgba(97, 175, 239, 0.25);
+    border-radius: 2px;
+    padding: 2px 6px;
+    margin: -2px -6px;
+  }
+
+  .post-list li.selected .post-row a {
+    color: var(--term-green);
+  }
+
+  /* ── keyboard shortcut hint (hidden on touch) ── */
+  .keyboard-hint {
+    color: var(--term-dim);
+    font-size: 0.78rem;
+    margin: 0;
+    opacity: 0.65;
+  }
+
+  @media (pointer: coarse) {
+    .keyboard-hint {
+      display: none;
+    }
+  }
+
+  /* ── mobile tap targets ── */
+  @media (pointer: coarse) {
+    .tag-btn,
+    .tag-chip {
+      min-height: 44px;
+      padding: 10px 12px;
+      font-size: 0.85rem;
+    }
   }
 </style>
