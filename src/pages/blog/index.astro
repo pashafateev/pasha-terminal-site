@@ -49,7 +49,7 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
 
     <p class="no-results" id="no-results" hidden>No posts match this filter.</p>
 
-    <p class="keyboard-hint" aria-hidden="true">j / k&nbsp; navigate &nbsp;&middot;&nbsp; ↵&nbsp; open &nbsp;&middot;&nbsp; q&nbsp; back</p>
+    <p class="keyboard-hint">j / k&nbsp; navigate &nbsp;&middot;&nbsp; ↵&nbsp; open &nbsp;&middot;&nbsp; q&nbsp; back</p>
 
     <p><span class="prompt">pasha@portfolio:~/blog$</span> cd ..</p>
     <p><a href="/">back to home</a></p>
@@ -76,19 +76,13 @@ const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags ?? []))].sort
       if (selectedItem) {
         selectedItem.classList.remove('selected');
         const prevLink = selectedItem.querySelector('a[href]');
-        if (prevLink) {
-          prevLink.removeAttribute('aria-current');
-          if (document.activeElement === prevLink) prevLink.blur();
-        }
+        if (prevLink && document.activeElement === prevLink) prevLink.blur();
       }
       selectedItem = item ?? null;
       if (selectedItem) {
         selectedItem.classList.add('selected');
         const link = selectedItem.querySelector('a[href]');
-        if (link) {
-          link.setAttribute('aria-current', 'true');
-          link.focus({ preventScroll: true });
-        }
+        if (link) link.focus({ preventScroll: true });
         selectedItem.scrollIntoView({ block: 'nearest', behavior: prefersReducedMotion ? 'auto' : 'smooth' });
       }
     };
